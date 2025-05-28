@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Fornecedor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #218838; }
+        .error { color: red; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>Cadastro de Fornecedor</h1>
+    <form action="./Register/saveSupplier.php" method="POST" onsubmit="return validarFormulario()">
+        <div class="form-group">
+            <label for="nome">Nome Completo:</label>
+            <input type="text" name="nome" id="nome" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">E-mail:</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" id="telefone" required placeholder="(00) 00000-0000">
+        </div>
+
+        <div class="form-group">
+            <label for="cpf">CPF:</label>
+            <input type="text" name="cpf" id="cpf" required placeholder="000.000.000-00">
+            <div id="cpf-error" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="senha">Senha (mínimo 6 caracteres):</label>
+            <input type="password" name="senha" id="senha" required minlength="6">
+        </div>
+
+        <div class="form-group">
+            <label for="confirmar_senha">Confirmar Senha:</label>
+            <input type="password" name="confirmar_senha" id="confirmar_senha" required>
+            <div id="senha-error" class="error"></div>
+        </div>
+
+        <button type="submit">Cadastrar Fornecedor</button>
+    </form>
+
+    <script src="../static/js/validation.js"></script>
+</body>
+</html>
