@@ -41,6 +41,7 @@ $conn->close();
     <link rel="stylesheet" href="../static/style/products.css">
 </head>
 <body>
+    
     <h1 style="text-align: center; margin-bottom: 30px;">Catálogo de Produtos</h1>
     
     <div class="container">
