@@ -1,58 +1,4 @@
-
-body {
-    min-height: 100vh; /* Alterado para vh para garantir altura total da viewport */
-    margin: 0; /* Remover margens padrão */
-    display: grid;
-    grid-template-columns: 20% 80%;
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(to bottom right, #0e1d3a, #163863);
-    color: #fff;
-    position: relative; /* Adicionado para posicionamento relativo */
-}
-    
-aside {
-    width: 120px;
-    background: linear-gradient(to bottom, #4a90e2, #1b2a4e);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 30px;
-    z-index: 2;
-}
-    
-.menu-icon {
-    font-size: 26px;
-    margin-bottom: 30px;
-    cursor: pointer;
-    color: white;
-}
-    
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 55px;
-    color: white;
-    text-align: center;
-}
-    
-.nav-item i {
-    font-size: 24px;
-    margin-bottom: 30px;
-}
-    
-.nav-item span {
-    font-size: 14px;
-}
-    
-    main {
-        position: relative; /* Adicionado para contexto de posicionamento */
-        min-height: 100vh; /* Garante que o main ocupe pelo menos a altura da tela */
-        padding-bottom: 80px; /* Espaço para a imagem na base */
-    }
-    
-    
-    .logo-img {
+.logo-img {
     width: 70px;
     height: 70px;
     border-radius: 20px;
@@ -63,76 +9,98 @@ aside {
     background: linear-gradient(to bottom right, #1b2a4e, #2a3f7f);
     padding: 8px;
     z-index: 10;
-    }
-    
-    .credit {
+}
+
+.credit {
     position: absolute;
     top: 20px;
     right: 30px;
     font-size: 14px;
     color: #88a4d4;
     z-index: 10;
-    }
-    
-    .credit strong {
-    color: #7cb9ff;
-    }
-    
-    h1, h3 {
-    font-size: 65px;
-    color: #7cb9ff;
-    margin-bottom: 10px;
-    }
-    
-    p {
-    font-size: 20px;
-    font-family: 'Inter', sans-serif;
-    color: white;
-    margin-bottom: 40px;
-    }
-    
-    .btn-start {
-    padding: 12px 30px;
-    background: linear-gradient(to right, #4a90e2, #1b68d1);
-    border: none;
-    border-radius: 25px;
-    font-size: 18px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-    z-index: 10;
-    position: relative;
-    }
-    
-    .btn-start:hover {
-    background: linear-gradient(to right, #1b68d1, #4a90e2);
-    }
-    
-    .website-link {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
     display: flex;
     align-items: center;
-    background: none;
-    border: 2px solid #4a90e2;
-    border-radius: 25px;
-    padding: 10px 20px;
-    font-size: 16px;
-    color: #cce4ff;
-    text-decoration: none;
-    z-index: 5;
-    background-color: rgba(0,0,0,0.3);
-    }
-    
-    .website-link i {
-    margin-left: 10px;
-    }
-    
-    .building-img {
+    gap: 10px;
+}
+
+.credit strong {
+    color: #7cb9ff;
+}
+
+.btn-start {
+    padding: 15px 40px;
+    background: linear-gradient(to right, #4a90e2, #1b68d1);
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.btn-start:hover {
+    background: linear-gradient(to right, #1b68d1, #4a90e2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
+
+
+.building-img {
     position: absolute;
     bottom: 0;
     right: 0;
     height: 80%;
     z-index: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.website-link {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #4a90e2;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #cce4ff;
+    text-decoration: none;
+    z-index: 5;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .credit {
+        top: 10px;
+        right: 10px;
+        font-size: 12px;
     }
+    
+    .website-link {
+        bottom: 20px;
+        right: 20px;
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+    
+    .building-img {
+        height: 60%;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-start {
+        padding: 12px 30px;
+        font-size: 16px;
+    }
+}
