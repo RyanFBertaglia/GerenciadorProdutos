@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
 $usuario = "root";
-$senha_db = ""; // Senha do seu MySQL (vazia no XAMPP padrão)
-$banco = "cadastro"; // Mesmo banco ou crie um específico para fornecedores
+$senha_db = ""; // Senha padrão do Mysql
+$banco = "dados"; // Banco de dados
 
 $conexao = new mysqli($host, $usuario, $senha_db, $banco);
 

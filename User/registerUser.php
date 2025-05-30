@@ -42,7 +42,7 @@
 
 
     <h1>Cadastro Completo</h1>
-    <form action="./Register/saveUser.php" method="POST" onsubmit="return validarFormulario()">
+    <form action="./register/saveUser.php" method="POST" onsubmit="return validarFormulario()">
         <div class="form-group">
             <label for="nome">Nome Completo:</label>
             <input type="text" name="nome" id="nome" required>

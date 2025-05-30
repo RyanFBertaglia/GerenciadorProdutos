@@ -1,3 +1,5 @@
+USE dados;
+
 CREATE TABLE produtos (
     idProduct INT AUTO_INCREMENT PRIMARY KEY,
     price DECIMAL(10, 2) NOT NULL,

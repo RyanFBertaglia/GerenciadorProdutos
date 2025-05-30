@@ -1,17 +1,23 @@
 
 body {
+    min-height: 100vh; /* Alterado para vh para garantir altura total da viewport */
+    margin: 0; /* Remover margens padrão */
     display: grid;
     grid-template-columns: 20% 80%;
     font-family: 'Montserrat', sans-serif;
     background: linear-gradient(to bottom right, #0e1d3a, #163863);
     color: #fff;
+    position: relative; /* Adicionado para posicionamento relativo */
 }
+
 
 
 form {
     max-width: 500px;
     margin: 0;
 }
+
+
 
 .button-class {
     padding: 12px 30px;
@@ -98,11 +104,19 @@ aside {
     font-size: 14px;
 }
 
-
 .building-img {
     position: absolute;
     bottom: 0;
     right: 0;
     height: 80%;
+    max-height: calc(100vh - 80px); /* Garante que a imagem não ultrapasse a altura da tela */
     z-index: 1;
+    object-fit: contain; /* Garante que a imagem inteira seja visível */
+}
+
+@media screen and (max-width: 970px) {
+    .building-img {
+        visibility: hidden;
+        display: none;
+    }
 }

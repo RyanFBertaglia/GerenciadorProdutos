@@ -39,8 +39,9 @@
 
     <!-- Conteúdo principal -->
     <main>
-        <img src="./static/img/logo.jpg" alt="Logo Mancha" class="logo-img" />
         <div class="credit">
+        <img src="./static/img/logo.jpg" alt="Logo Mancha" class="logo-img" />
+
             Feito por <strong>Mancha</strong>
         </div>
 

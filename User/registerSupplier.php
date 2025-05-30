@@ -3,20 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Fornecedor</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #218838; }
-        .error { color: red; font-size: 14px; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style/register.css">
 </head>
 <body>
+<aside>
+        <div class="menu-icon">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>Carrinho</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Vender</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Minha conta</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-question-circle"></i>
+            <span>Ajuda</span>
+        </div>
+    </aside>
+    <main>
+    <img src="../static/img/predio.png" alt="Prédio" class="building-img" />
     <h1>Cadastro de Fornecedor</h1>
-    <form action="./Register/saveSupplier.php" method="POST" onsubmit="return validarFormulario()">
+    <form action="./register/saveSupplier.php" method="POST" onsubmit="return validarFormulario()">
         <div class="form-group">
             <label for="nome">Nome Completo:</label>
             <input type="text" name="nome" id="nome" required>
@@ -49,9 +70,11 @@
             <div id="senha-error" class="error"></div>
         </div>
 
-        <button type="submit">Cadastrar Fornecedor</button>
+        <button class="button-class" type="submit">Cadastrar</button>
     </form>
 
     <script src="../static/js/validation.js"></script>
+    </main>
+    
 </body>
 </html>
