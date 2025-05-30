@@ -129,3 +129,18 @@ function redirectIfLoggedIn($url = '/') {
         exit;
     }
 }
+
+function protectAdminPage() {
+    if (!isAdmin()) {
+        $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+        $_SESSION['erro'] = "Você precisa estar logado como administrador para acessar esta página";
+        header('Location: /admin/admin_login.php');
+        exit;
+    }
+}
+
+
+function isAdmin() {
+    return isset($_SESSION['admin']) && !empty($_SESSION['admin']);
+}
+
