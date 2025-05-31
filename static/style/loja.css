@@ -1,0 +1,385 @@
+/* ===============================================
+   CSS UNIFICADO PARA PRODUTOS - SEM CONFLITOS
+   =============================================== */
+
+/* ===============================================
+   CSS CORRIGIDO PARA PRODUTOS - LARGURA TOTAL
+   =============================================== */
+
+/* Container principal - CORREÇÃO DA LARGURA */
+.produtos-container {
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    grid-column: 2; /* Garante que ocupa a coluna do main */
+    padding: 0; /* Remove padding padrão que possa interferir */
+    margin: 0; /* Remove margens indesejadas */
+}
+
+
+/* Container principal dos produtos - INTEGRADO AO GRID EXISTENTE */
+.produtos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    width: 100%;
+    justify-items: center;
+    max-width: none; /* Remove limitação para usar todo espaço do main */
+    margin: 0;
+    padding: 30px 20px;
+    height: fit-content;
+    overflow-y: auto; /* Permite scroll se necessário */
+}
+
+/* Ajuste para o main existente */
+main.produtos-page {
+    align-items: stretch; /* Remove centralização vertical */
+    text-align: left; /* Remove centralização de texto */
+    padding: 0; /* Remove padding padrão do main */
+    overflow-y: auto; /* Permite scroll */
+}
+
+/* Card do produto - HARMONIZADO COM TEMA AZUL */
+.produto-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 35px rgba(14, 29, 58, 0.15); /* Sombra harmonizada com tema azul */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Montserrat', sans-serif; /* Mantém consistência tipográfica */
+}
+
+.produto-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    /* Gradiente harmonizado com tema azul existente */
+    background: linear-gradient(90deg, #4a90e2, #1b2a4e, #163863);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.produto-card:hover::before {
+    transform: scaleX(1);
+}
+
+.produto-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(14, 29, 58, 0.25);
+}
+
+/* Imagem do produto */
+.produto-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.produto-card:hover img {
+    transform: scale(1.05);
+    border-color: rgba(74, 144, 226, 0.3); /* Cor harmonizada */
+}
+
+/* Título do produto - CORES HARMONIZADAS */
+.produto-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1b2a4e; /* Cor do tema existente */
+    margin-bottom: 15px;
+    line-height: 1.3;
+    font-family: 'Montserrat', sans-serif;
+    /* Gradiente harmonizado com tema azul */
+    background: linear-gradient(135deg, #4a90e2, #1b2a4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Parágrafos de informação */
+.produto-card p {
+    margin-bottom: 10px;
+    color: #4a5568;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.produto-card p:first-of-type::before {
+    content: '🏢';
+    font-size: 1rem;
+}
+
+.produto-card p:nth-of-type(2)::before {
+    content: '💰';
+    font-size: 1rem;
+}
+
+.produto-card p:last-of-type::before {
+    content: '📦';
+    font-size: 1rem;
+}
+
+/* Preço destacado - HARMONIZADO */
+.produto-card p:nth-of-type(2) {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d7a2d;
+    margin: 15px 0;
+    padding: 10px;
+    background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+    border-radius: 10px;
+    border-left: 4px solid #38a169;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Link de detalhes - TEMA AZUL HARMONIZADO */
+.produto-card a {
+    display: inline-block;
+    /* Gradiente harmonizado com tema existente */
+    background: linear-gradient(135deg, #4a90e2 0%, #1b2a4e 100%);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    font-size: 0.9rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.produto-card a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.produto-card a:hover::before {
+    left: 100%;
+}
+
+.produto-card a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+    background: linear-gradient(135deg, #357abd 0%, #0f1d37 100%);
+}
+
+.produto-card a:active {
+    transform: translateY(0);
+}
+
+/* RESPONSIVIDADE - INTEGRADA COM SISTEMA EXISTENTE */
+@media (max-width: 768px) {
+    /* Quando sidebar fica fixa em mobile, ajustamos o grid */
+    .produtos-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px 15px;
+        /* Considera a sidebar fixa de 250px em mobile */
+        margin-left: 0;
+    }
+    
+    /* Quando sidebar está visível em mobile */
+    body:has(aside.show) .produtos-grid {
+        filter: blur(2px);
+        pointer-events: none;
+        transition: filter 0.3s ease;
+    }
+    
+    .produto-card {
+        padding: 20px;
+    }
+    
+    .produto-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .produto-card p:nth-of-type(2) {
+        font-size: 1.1rem;
+    }
+    
+    .produto-card img {
+        height: 160px;
+    }
+}
+
+@media (max-width: 576px) {
+    .produtos-grid {
+        padding: 15px 10px;
+        gap: 15px;
+    }
+    
+    .produto-card {
+        padding: 18px;
+        border-radius: 15px;
+    }
+    
+    .produto-card img {
+        height: 150px;
+        border-radius: 10px;
+    }
+    
+    .produto-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .produto-card p {
+        font-size: 0.85rem;
+    }
+    
+    .produto-card a {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Telas grandes - otimização */
+@media (min-width: 1200px) {
+    .produtos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 40px 30px;
+    }
+    
+    .produto-card {
+        padding: 30px;
+    }
+    
+    .produto-card img {
+        height: 200px;
+    }
+    
+    .produto-card h3 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Animações de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.produto-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.produto-card:nth-child(even) {
+    animation-delay: 0.1s;
+}
+
+.produto-card:nth-child(3n) {
+    animation-delay: 0.2s;
+}
+
+/* Estados de carregamento */
+.produto-card.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.produto-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+}
+
+/* Melhorias de acessibilidade - CORES HARMONIZADAS */
+.produto-card:focus-within {
+    outline: 3px solid #4a90e2; /* Cor harmonizada */
+    outline-offset: 2px;
+}
+
+.produto-card a:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+/* Efeitos de glassmorphism */
+@supports (backdrop-filter: blur(10px)) {
+    .produto-card {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+}
+
+/* Indicador de estoque baixo */
+.produto-card[data-stock="low"] {
+    border-left: 4px solid #e53e3e;
+}
+
+.produto-card[data-stock="low"]::after {
+    content: '⚠️ Estoque Baixo';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #fed7d7;
+    color: #c53030;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* INTEGRAÇÃO ESPECÍFICA COM MAIN EXISTENTE */
+/* Se a página de produtos usar uma classe específica no main */
+main.produtos-container {
+    height: 100vh;
+    overflow-y: auto;
+    display: block; /* Remove flex para permitir scroll natural */
+    align-items: unset;
+    text-align: unset;
+}
+
+/* Scroll personalizado para combinar com tema */
+.produtos-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.produtos-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.produtos-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #4a90e2, #1b2a4e);
+    border-radius: 4px;
+}
+
+.produtos-grid::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #357abd, #0f1d37);
+}

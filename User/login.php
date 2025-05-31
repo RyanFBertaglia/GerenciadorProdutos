@@ -5,7 +5,7 @@ require_once '../includes/auth.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-redirectIfLoggedIn('/');
+redirectIfLoggedIn('/produtos/index.php');
 
 $erro = $_SESSION['erro'] ?? '';
 unset($_SESSION['erro']);

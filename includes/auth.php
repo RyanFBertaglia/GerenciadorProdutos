@@ -3,20 +3,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Constantes para configuração
 define('MIN_PASSWORD_LENGTH', 6);
-define('TOKEN_EXPIRACAO', '+1 hour'); // Tempo de expiração do token de recuperação
+define('TOKEN_EXPIRACAO', '+1 hour');
 
-/**
- * Verifica se o usuário está logado
- */
 function isLoggedIn() {
     return isset($_SESSION['usuario']) && !empty($_SESSION['usuario']);
 }
 
-/**
- * Protege uma página requerendo login
- */
 function protectPage() {
     if (!isLoggedIn()) {
         $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
@@ -26,9 +19,7 @@ function protectPage() {
     }
 }
 
-/**
- * Realiza o login do usuário
- */
+//Login user normal
 function login($email, $senha, $pdo) {
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
     $stmt->execute([$email]);
@@ -134,7 +125,7 @@ function protectAdminPage() {
     if (!isAdmin()) {
         $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
         $_SESSION['erro'] = "Você precisa estar logado como administrador para acessar esta página";
-        header('Location: /admin/admin_login.php');
+        header('Location: /admin/login.php');
         exit;
     }
 }
@@ -143,4 +134,41 @@ function protectAdminPage() {
 function isAdmin() {
     return isset($_SESSION['admin']) && !empty($_SESSION['admin']);
 }
+
+function isFornecedor() {
+    // Verifica se está logado e se a sessão tem o tipo 'fornecedor'
+    return isLoggedIn() && ($_SESSION['usuario']['tipo'] ?? null) === 'fornecedor';
+}
+
+/**
+ * Protege uma página para acesso exclusivo de fornecedores
+ */
+function protectFornecedorPage() {
+    if (!isFornecedor()) {
+        $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'] ?? '/';
+        $_SESSION['erro'] = "Acesso restrito a fornecedores";
+        header('Location: /fornecedor/login.php');
+        exit;
+    }
+}
+
+//Login do fornecedor
+function loginFornecedor($email, $senha, $pdo) {
+    $stmt = $pdo->prepare("SELECT * FROM fornecedores WHERE email = ?");
+    $stmt->execute([$email]);
+    $fornecedor = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($fornecedor && password_verify($senha, $fornecedor['senha'])) {
+        // Remove a senha antes de salvar na sessão
+        unset($fornecedor['senha']);
+        
+        // Adiciona o tipo para identificar o tipo de usuário
+        $fornecedor['tipo'] = 'fornecedor';
+        
+        $_SESSION['usuario'] = $fornecedor;
+        return true;
+    }
+    return false;
+}
+
 

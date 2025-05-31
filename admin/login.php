@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($admin && password_verify($senha, $admin['senha'])) {
         unset($admin['senha']); // Nunca armazene a senha na sessão
         $_SESSION['admin'] = $admin;
-        header('Location: painel_admin.php');
+        header('Location: dashboard.php');
         exit;
     } else {
         $erro = "Email ou senha incorretos.";

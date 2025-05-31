@@ -1,15 +1,17 @@
 aside {
-    border-top: 150px;
-    top: 150px;
+    top: 0px;
     background: linear-gradient(to bottom, #4a90e2, #1b2a4e);
     display: flex;
+    position: fixed;
     flex-direction: column;
     align-items: center;
     padding-top: 30px;
     transition: all 0.3s ease;
     overflow: hidden;
-    z-index: 100;
+    width: 200px;
+    height: 100vh;
 }
+
 
 
 .menu-icon:hover {
@@ -62,7 +64,7 @@ aside {
     position: fixed;
     top: 20px;
     left: 80px;
-    z-index: 200;
+    z-index: 1000;
     background: linear-gradient(to bottom, #4a90e2, #1b2a4e);
     border: none;
     border-radius: 10px;

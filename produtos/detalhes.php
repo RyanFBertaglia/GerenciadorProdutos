@@ -16,7 +16,7 @@ if (!$produto) {
 ?>
 
 <h1><?= htmlspecialchars($produto['description']) ?></h1>
-<img src="../uploads/<?= htmlspecialchars($produto['image']) ?>" alt="<?= htmlspecialchars($produto['description']) ?>">
+<img src="../static/uploads/<?= htmlspecialchars($produto['image']) ?>" alt="<?= htmlspecialchars($produto['description']) ?>">
 <p>Fornecedor: <?= htmlspecialchars($produto['supplier']) ?></p>
 <p>Preço: R$ <?= number_format($produto['price'], 2, ',', '.') ?></p>
 <p>Estoque disponível: <?= $produto['stock'] ?> unidades</p>
