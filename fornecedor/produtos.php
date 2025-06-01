@@ -81,20 +81,20 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             object-fit: cover;
         }
     </style>
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style/admin/dash-fornecedor.css">
+    <link rel="stylesheet" href="../static/style/main.css">
+    <link rel="stylesheet" href="../static/style/tipografia.css">
+    </head>
 <body>
     <?php include '../static/elements/sidebar-fornecedor.php'; ?>
     <div class="container-fluid">
         <div class="row">
-        
-
-
-
-            <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h2>Meus Produtos</h2>
-                    <a href="/fornecedor/cadastrar-produto.php" class="btn btn-primary">
+            <main class="w-100 py-4 px-3">
+                <br><br>
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom w-100">
+                <h2>Meus Produtos</h2>
+                    <a href="/fornecedor/add-product.php" class="btn btn-primary" id="novo-produto">
                         <i class="bi bi-plus-circle"></i> Novo Produto
                     </a>
                 </div>
@@ -166,6 +166,5 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

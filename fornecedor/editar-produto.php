@@ -135,6 +135,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
         }
     </style>
+    <link rel="stylesheet" href="../static/style/admin/dash-fornecedor.css">
+
 </head>
 <body>
     <?php include '../static/elements/sidebar-fornecedor.php'; ?>
@@ -142,7 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row">
             
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <main class="w-100 py-4 px-3">
+                <br><br>
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h2>Editar Produto</h2>
                     <a href="/fornecedor/produtos.php" class="btn btn-secondary">

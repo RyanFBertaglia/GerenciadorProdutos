@@ -13,18 +13,12 @@ aside {
     grid-area: aside;
 }
 
-body.collapsed {
-    grid-template-columns: 0px 1fr; /* correto */
-}
 
-body.collapsed aside {
-    transform: translateX(-100%);
-}
 
 /* Conteúdo principal */
 .container-fluid {
     grid-area: container;
-    height: 100vh;
+    overflow-y: auto;
 }
 
 
@@ -32,16 +26,16 @@ body.collapsed aside {
 
 
 /* Responsividade */
-@media (max-width: 768px) {
+@media (max-width: 874) {
     h2 {
         padding-left: 50px;
     }
 
-    .menu-toggle {
-        margin-left: -60px;
-    }
+    /*To do:
+        Arrumar barra lateral
+    */
 
-    body {
+    /*body {
         grid-template-columns: 1fr;
         grid-template-areas: "container";
     }
@@ -70,5 +64,5 @@ body.collapsed aside {
     main {
         padding-left: 10px;
         padding-right: 10px;
-    }
+    }*/
 }

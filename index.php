@@ -19,6 +19,8 @@
 
   <!-- Conteúdo principal -->
   <main>
+    <br>
+    <br>
     <div class="container">
     <h1>Comece a comprar e tenha</h1>
     <h1>20% de desconto em sua</h1>

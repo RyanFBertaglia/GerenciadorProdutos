@@ -95,6 +95,9 @@ body.collapsed aside {
 main {
     max-width: 800px;
     margin: 0 auto;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     padding: 40px 20px;
     color: white;
     text-align: center;
@@ -102,6 +105,10 @@ main {
     height: 100vh;
     box-sizing: border-box;
   }
+
+  main::-webkit-scrollbar {
+    display: none;
+}
 
 
 /* Responsividade */
