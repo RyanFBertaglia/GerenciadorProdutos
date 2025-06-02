@@ -29,12 +29,26 @@ $total = 0;
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Carrinho</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="../static/style/main.css">
+  <link rel="stylesheet" href="./static/style/tipografia.css">
+
+  <style>
+    
+    main {
+        grid-area: main;
+        font-family: 'Inter', sans-serif;
+    }
+  </style>
 </head>
 <body>
 <?php include '../static/elements/sidebar-main.php'; ?>
 
 <main>
+<br><br><br>
 <h1>Meu Carrinho</h1>
 
 <?php if (empty($itens)): ?>

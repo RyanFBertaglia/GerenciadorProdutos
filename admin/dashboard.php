@@ -81,7 +81,7 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <span class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-person-fill"></i> <?= htmlspecialchars($_SESSION['usuario']['nome']) ?>
+                                <i class="bi bi-person-fill"></i> <?= htmlspecialchars($_SESSION['admin']['nome']) ?>
                             </span>
                         </div>
                     </div>

@@ -1,13 +1,18 @@
 <?php
+// Inicia a sessão para armazenar mensagens de erro
+session_start();
+
 $host = "localhost";
 $usuario = "root";
-$senha_db = ""; // Senha padrão do Mysql
-$banco = "dados"; // Banco de dados
+$senha_db = ""; 
+$banco = "dados";
 
 $conexao = new mysqli($host, $usuario, $senha_db, $banco);
 
 if ($conexao->connect_error) {
-    die("Erro de conexão: " . $conexao->connect_error);
+    $_SESSION['erro'] = "Erro de conexão: " . $conexao->connect_error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 function validarCPF($cpf) {
@@ -29,55 +34,89 @@ function validarCPF($cpf) {
     return true;
 }
 
-$nome = htmlspecialchars($_POST['nome']);
-$email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-$telefone = preg_replace('/[^0-9]/', '', $_POST['telefone']);
-$cpf = preg_replace('/[^0-9]/', '', $_POST['cpf']);
-$senha = $_POST['senha'];
-$confirmar_senha = $_POST['confirmar_senha'];
+$nome = htmlspecialchars($_POST['nome'] ?? '');
+$email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+$telefone = preg_replace('/[^0-9]/', '', $_POST['telefone'] ?? '');
+$cpf = preg_replace('/[^0-9]/', '', $_POST['cpf'] ?? '');
+$senha = $_POST['senha'] ?? '';
+$confirmar_senha = $_POST['confirmar_senha'] ?? '';
 
 // Validações
 if ($senha !== $confirmar_senha) {
-    die("Erro: As senhas não coincidem!");
+    $_SESSION['erro'] = "As senhas não coincidem!";
+    $_SESSION['dados'] = $_POST;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 if (!validarCPF($cpf)) {
-    die("Erro: CPF inválido!");
+    $_SESSION['erro'] = "CPF inválido!";
+    $_SESSION['dados'] = $_POST;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    die("Erro: E-mail inválido!");
+    $_SESSION['erro'] = "E-mail inválido!";
+    $_SESSION['dados'] = $_POST;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 $sql_verifica = "SELECT id FROM fornecedores WHERE email = ? OR cpf = ?";
 $stmt_verifica = $conexao->prepare($sql_verifica);
+
+if (!$stmt_verifica) {
+    $_SESSION['erro'] = "Erro na preparação da consulta: " . $conexao->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
 $stmt_verifica->bind_param("ss", $email, $cpf);
-$stmt_verifica->execute();
+
+if (!$stmt_verifica->execute()) {
+    $_SESSION['erro'] = "Erro na execução da consulta: " . $stmt_verifica->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
 $stmt_verifica->store_result();
 
 if ($stmt_verifica->num_rows > 0) {
-    die("Erro: E-mail ou CPF já cadastrados!");
+    $_SESSION['erro'] = "E-mail ou CPF já cadastrados!";
+    $_SESSION['dados'] = $_POST;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 // Criptografar senha
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
+if (!$senha_hash) {
+    $_SESSION['erro'] = "Erro ao criptografar a senha!";
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
 $sql_insere = "INSERT INTO fornecedores (nome, email, telefone, cpf, senha) VALUES (?, ?, ?, ?, ?)";
 $stmt_insere = $conexao->prepare($sql_insere);
 
 if ($stmt_insere === false) {
-    die("Erro na preparação da query: " . $conexao->error);
+    $_SESSION['erro'] = "Erro na preparação da query: " . $conexao->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 $stmt_insere->bind_param("sssss", $nome, $email, $telefone, $cpf, $senha_hash);
 
 if ($stmt_insere->execute()) {
-    echo "<h1>Fornecedor cadastrado com sucesso!</h1>";
-    echo "<p>Nome: $nome</p>";
-    echo "<p>E-mail: $email</p>";
-    echo "<a href='cadastro_fornecedor.php'>Cadastrar novo fornecedor</a>";
+    // Cadastro bem-sucedido
+    header("Location: /fornecedor/dashboard.php=" . urlencode($nome) . "&email=" . urlencode($email));
+    exit();
 } else {
-    echo "Erro ao cadastrar: " . $stmt_insere->error;
+    $_SESSION['erro'] = "Erro ao cadastrar: " . $stmt_insere->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
 $stmt_verifica->close();

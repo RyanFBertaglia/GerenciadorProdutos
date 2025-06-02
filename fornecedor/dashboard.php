@@ -34,8 +34,10 @@ $produtosAprovados = $stmt->fetch()['total'];
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Fornecedor</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
 
     <link rel="stylesheet" href="../static/style/admin/dash-fornecedor.css">
     <link rel="stylesheet" href="../static/style/main.css">
@@ -43,10 +45,6 @@ $produtosAprovados = $stmt->fetch()['total'];
 
 
     <style>
-
-
-        
-
         .status-badge {
             padding: 3px 8px;
             border-radius: 3px;
@@ -65,6 +63,9 @@ $produtosAprovados = $stmt->fetch()['total'];
             background-color: #dc3545;
             color: white;
         }
+        h3, h2{
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -75,7 +76,7 @@ $produtosAprovados = $stmt->fetch()['total'];
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <h2>Meu Dashboard</h2>
+                <h2 style="color: white;" >Meu Dashboard</h2>
                 
                 <div class="row my-4">
                     <div class="col-md-4">
@@ -88,7 +89,7 @@ $produtosAprovados = $stmt->fetch()['total'];
                     </div>
                 </div>
 
-                <h3>Últimos Produtos</h3>
+                <h3 style="color: white;">Últimos Produtos</h3>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>

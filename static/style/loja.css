@@ -1,12 +1,3 @@
-/* ===============================================
-   CSS UNIFICADO PARA PRODUTOS - SEM CONFLITOS
-   =============================================== */
-
-/* ===============================================
-   CSS CORRIGIDO PARA PRODUTOS - LARGURA TOTAL
-   =============================================== */
-
-/* Container principal - CORREÇÃO DA LARGURA */
 .produtos-container {
     width: 100%;
     height: 100vh;

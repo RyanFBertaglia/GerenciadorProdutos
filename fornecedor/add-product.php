@@ -72,11 +72,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Cadastrar Produto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style/main.css">
+
+    <style>
+        .container-fluid{
+            grid-area: main;
+        }
+
+    @media (max-width: 768px) {
+    h2 {
+        padding-left: 0px;
+    }
+    }
+    </style>
 </head>
 <body>
     <?php include '../static/elements/sidebar-fornecedor.php'; ?>
     <div class="container-fluid">
     <main>
+        <br><br><br>
         <h2>Cadastrar Novo Produto</h2>
         
         <?php if ($erro): ?>

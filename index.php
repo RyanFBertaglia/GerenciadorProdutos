@@ -32,8 +32,8 @@
     </div>
     
 
-    <a href="https://manchagestões.com" class="website-link" target="_blank">
-      Nosso Website: ManchaGestões.com <i class="fas fa-globe"></i>
+    <a href="/admin/dashboard.php" class="website-link" target="_blank">
+      Administração <i class="fas fa-globe"></i>
     </a>
 
     <img src="./static/img/predio.png" alt="Prédio" class="building-img" />

@@ -1,18 +1,20 @@
 <?php
+// Inicie a sessão no topo do arquivo
+session_start();
+
 // Configurações do banco de dados
 $host = "localhost";
 $usuario = "root";
 $senha = "";
 $banco = "dados";
 
-
 $conexao = new mysqli($host, $usuario, $senha, $banco);
 
-
 if ($conexao->connect_error) {
-    die("Erro de conexão: " . $conexao->connect_error);
+    $_SESSION['erro'] = "Erro de conexão com o banco de dados: " . $conexao->connect_error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
-
 
 function validarCPF($cpf) {
     $cpf = preg_replace('/[^0-9]/', '', $cpf);
@@ -33,53 +35,120 @@ function validarCPF($cpf) {
     return true;
 }
 
+// Recebe dados do formulário
+$nome = htmlspecialchars($_POST['nome'] ?? '');
+$email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+$senha = $_POST['senha'] ?? '';
+$cpf = preg_replace('/[^0-9]/', '', $_POST['cpf'] ?? '');
+$phone = preg_replace('/[^0-9]/', '', $_POST['phone'] ?? '');
+$birthdate = $_POST['birthdate'] ?? '';
 
-$nome = htmlspecialchars($_POST['nome']);
-$email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-$senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-$cpf = preg_replace('/[^0-9]/', '', $_POST['cpf']);
-$phone = preg_replace('/[^0-9]/', '', $_POST['phone']);
-$address = htmlspecialchars($_POST['address']);
-$birthdate = $_POST['birthdate'];
+// Tratamento do endereço completo
+$endereco_completo = htmlspecialchars($_POST['endereco_completo'] ?? '');
 
-
-if (!validarCPF($cpf)) {
-    die("CPF inválido!");
+// Se o endereço completo não foi enviado, tenta montar dos campos individuais
+if (empty($endereco_completo)) {
+    $cep = $_POST['cep'] ?? '';
+    $logradouro = $_POST['logradouro'] ?? '';
+    $numero = $_POST['numero'] ?? '';
+    $bairro = $_POST['bairro'] ?? '';
+    $cidade = $_POST['cidade'] ?? '';
+    $uf = $_POST['uf'] ?? '';
+    
+    if (!empty($cep) && !empty($logradouro) && !empty($numero) && !empty($bairro) && !empty($cidade) && !empty($uf)) {
+        $endereco_completo = "$cep, $logradouro, $numero, $bairro, $cidade-$uf";
+    }
 }
 
+// Validação de CPF
+if (!validarCPF($cpf)) {
+    $_SESSION['erro'] = "CPF inválido!";
+    $_SESSION['dados'] = $_POST; // Armazena dados para possível recuperação
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
 
+// Verifica se email já existe
 $sql_verifica = "SELECT id FROM usuarios WHERE email = ?";
 $stmt_verifica = $conexao->prepare($sql_verifica);
-$stmt_verifica->bind_param("s", $email);
-$stmt_verifica->execute();
-$stmt_verifica->store_result();
 
-
-if ($stmt_verifica->num_rows > 0) {
-    die("Este e-mail já está cadastrado!");
+if (!$stmt_verifica) {
+    $_SESSION['erro'] = "Erro na preparação da consulta: " . $conexao->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
+$stmt_verifica->bind_param("s", $email);
+if (!$stmt_verifica->execute()) {
+    $_SESSION['erro'] = "Erro na execução da consulta: " . $stmt_verifica->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
 
+$stmt_verifica->store_result();
+
+if ($stmt_verifica->num_rows > 0) {
+    $_SESSION['erro'] = "Este e-mail já está cadastrado!";
+    $_SESSION['dados'] = $_POST;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
+// Verifica se CPF já existe
+$sql_verificaCpf = "SELECT id FROM usuarios WHERE cpf = ?";
+$stmt_verificaCpf = $conexao->prepare($sql_verificaCpf);
+
+if (!$stmt_verificaCpf) {
+    $_SESSION['erro'] = "Erro na preparação da consulta: " . $conexao->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
+$stmt_verificaCpf->bind_param("s", $cpf);
+if (!$stmt_verificaCpf->execute()) {
+    $_SESSION['erro'] = "Erro na execução da consulta: " . $stmt_verificaCpf->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
+$stmt_verificaCpf->store_result();
+
+if ($stmt_verificaCpf->num_rows > 0) {
+    $_SESSION['erro'] = "Este CPF já está cadastrado!";
+    $_SESSION['dados'] = $_POST;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
+// Criptografa a senha
+$senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+if (!$senha_hash) {
+    $_SESSION['erro'] = "Erro ao criptografar a senha!";
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
+}
+
+// Insere no banco de dados
 $sql_insere = "INSERT INTO usuarios (nome, email, senha, cpf, telefone, endereco, data_nascimento)
                VALUES (?, ?, ?, ?, ?, ?, ?)";
 $stmt_insere = $conexao->prepare($sql_insere);
 
-
 if ($stmt_insere === false) {
-    die("Erro na preparação da query: " . $conexao->error);
+    $_SESSION['erro'] = "Erro na preparação da query: " . $conexao->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
 
-
-$stmt_insere->bind_param("sssssss", $nome, $email, $senha, $cpf, $phone, $address, $birthdate);
-
+$stmt_insere->bind_param("sssssss", $nome, $email, $senha_hash, $cpf, $phone, $endereco_completo, $birthdate);
 
 if ($stmt_insere->execute()) {
-    echo "<h1>Cadastro realizado com sucesso!</h1>";
-    echo "<a href='formulario.php'>Voltar</a>";
+    header("Location: /user/login.php?cadastro=sucesso");
+    exit;
 } else {
-    echo "Erro ao cadastrar: " . $stmt_insere->error;
+    $_SESSION['erro'] = "Erro ao cadastrar: " . $stmt_insere->error;
+    header("Location: /static/elements/erro-cadastro.php");
+    exit();
 }
-
 
 // Fechar conexões
 $stmt_verifica->close();

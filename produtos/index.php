@@ -23,7 +23,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <?php include '../static/elements/sidebar-main.php'; ?>
 
-    <main class="produtos-container">
+    <main class="produtos-container" class="container-fluid">
     <div class="produtos-grid">
         <?php foreach ($produtos as $produto): ?>
         <div class="produto-card">

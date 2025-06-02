@@ -39,8 +39,8 @@ body {
 }
 
 .container {
-    margin: 0 auto; /* Centraliza o main */
-    padding: 0 20px; /* Margens internas iguais */
+    margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -49,30 +49,19 @@ body {
 
 main p, main h1 {
     width: 100%;
-    max-width: 800px; /* Largura máxima para melhor legibilidade */
-    text-align: justify; /* Força justificação */
+    max-width: 800px;
+    text-align: justify;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Garante que os h1 não fiquem com espaçamento estranho */
 main h1 {
-    text-align: left; /* Títulos alinhados à esquerda (opcional) */
+    text-align: left;
     margin-bottom: 10px;
 }
 
 
-aside {
-    grid-area: aside;
-}
 
-body.collapsed {
-    grid-template-columns: 0px 1fr; /* correto */
-}
-
-body.collapsed aside {
-    transform: translateX(-100%);
-}
 
 .website-link {
     position: absolute;
@@ -108,47 +97,4 @@ main {
 
   main::-webkit-scrollbar {
     display: none;
-}
-
-
-/* Responsividade */
-@media (max-width: 768px) {
-    h2 {
-        padding-left: 50px;
-    }
-
-    .menu-toggle {
-        margin-left: -60px;
-    }
-
-    body {
-        grid-template-columns: 1fr;
-        grid-template-areas: "main";
-    }
-
-    body.collapsed {
-        grid-template-columns: 1fr;
-    }
-
-    body.collapsed .menu-toggle {
-        margin-left: 200px;
-    }
-
-    aside {
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 250px;
-        transform: translateX(-100%);
-        z-index: 80;
-    }
-
-    aside.show {
-        transform: translateX(0);
-    }
-
-    main {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
 }

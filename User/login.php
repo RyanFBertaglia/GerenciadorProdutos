@@ -31,84 +31,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="./static/style/login.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f1f1f1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .login-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 300px;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label, input {
-            display: block;
-            width: 100%;
-        }
-
-        input[type="email"], input[type="password"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px;
-            border: none;
-            width: 100%;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .erro {
-            color: red;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/style/main.css">
+    <link rel="stylesheet" href="../static/style/login.css">    
 </head>
 <body>
 
-<div class="login-container">
-    <h2>Login</h2>
-    
-    <?php if (!empty($erro)): ?>
-        <div class="erro"><?= htmlspecialchars($erro) ?></div>
-    <?php endif; ?>
+<?php include '../static/elements/sidebar-main.php'; ?>
 
-    <form method="POST" action="login.php">
-        <div class="form-group">
-            <label for="email">E-mail:</label>
-            <input type="email" name="email" required>
+<div class="container-fluid">
+        <form method="POST" action="login.php">
+            <h2>Login</h2>
+            <?php if ($erro): ?>
+                <div class="erro"><?= htmlspecialchars($erro) ?></div>
+            <?php endif; ?>
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <div class="btn-container">
+        <button type="submit" class="btn">Entrar</button>
+        <a href="/user/registerUser.php" class="btn">Ainda não tem uma conta? Cadastrar-se</a>
         </div>
-        
-        <div class="form-group">
-            <label for="senha">Senha:</label>
-            <input type="password" name="senha" required>
-        </div>
-        
-        <button type="submit">Entrar</button>
-    </form>
-</div>
+        </form>
+    </div> 
 
 </body>
 </html>

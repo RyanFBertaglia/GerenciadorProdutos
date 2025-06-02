@@ -1,31 +1,31 @@
+/* ===== ESTILOS EXCLUSIVOS DA SIDEBAR ===== */
+
+
+
 body {
-    min-height: 100vh;
     margin: 0;
-    display: grid;
+    height: 100vh;
     grid-template-columns: 200px 1fr;
-    transition: grid-template-columns 0.3s ease;
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(to bottom right, #0e1d3a, #163863);
-    color: #fff;
+    display: grid;
+    grid-template-areas: "aside main";
 }
 
-/* Sidebar */
-aside {
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
     height: 100vh;
+    width: 200px;
     background: linear-gradient(to bottom, #4a90e2, #1b2a4e);
+    z-index: 1000;
     transition: transform 0.3s ease;
+    color: white;
+    overflow-y: auto;
 }
 
-/* Conteúdo principal */
-main {
-    grid-area: main;
-    position:static;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    overflow-y: auto;
+
+aside {
+    grid-area: aside;
 }
 
 body.collapsed {
@@ -36,30 +36,39 @@ body.collapsed aside {
     transform: translateX(-100%);
 }
 
+/* Espaço para o conteúdo principal */
+.main-content {
+    padding-left: 200px; /* Largura da sidebar */
+    transition: padding-left 0.3s ease;
+    min-height: 100vh;
+}
 
-@media (max-width: 768px) {
+body.collapsed .main-content {
+    padding-left: 0;
+}
 
-    body {
-        grid-template-columns: 1fr;
-    }
-
-    aside {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 250px;
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 874px) {
+    .sidebar {
         transform: translateX(-100%);
     }
 
-    aside.show {
+    .sidebar.show {
         transform: translateX(0);
+    }
+
+    .main-content {
+        padding-left: 0 !important;
     }
 }
 
-
-/* Responsividade 
 @media (max-width: 768px) {
+
+
+    .menu-toggle {
+        margin-left: -60px;
+    }
+
     body {
         grid-template-columns: 1fr;
         grid-template-areas: "main";
@@ -69,23 +78,20 @@ body.collapsed aside {
         grid-template-columns: 1fr;
     }
 
+    body.collapsed .menu-toggle {
+        margin-left: 200px;
+    }
+
     aside {
-        position: fixed;
         top: 0;
         left: 0;
         height: 100vh;
         width: 250px;
         transform: translateX(-100%);
-        z-index: 150;
+        z-index: 80;
     }
 
     aside.show {
         transform: translateX(0);
     }
-
-    main {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
 }
-*/

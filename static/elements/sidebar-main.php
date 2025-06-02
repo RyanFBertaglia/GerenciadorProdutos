@@ -8,9 +8,13 @@
   <!-- Menu lateral -->
   <aside>
     <br><br><br>
-    <div class="nav-item" onclick="window.location.href='/produtos/'">
+    <div class="nav-item" onclick="window.location.href='/'">
       <i class="fas fa-home"></i>
       <span>Início</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='/produtos/'">
+      <i class="fas fa-search"></i>
+      <span>Explorar Produtos</span>
     </div>
     <div class="nav-item" onclick="window.location.href='/carrinho/'">
       <i class="fas fa-shopping-cart"></i>
