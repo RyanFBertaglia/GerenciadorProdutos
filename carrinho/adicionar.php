@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once './includes/db.php';
 require_once './includes/auth.php';
 
-protectAdminPage();
+protectPage();
 
 // Dados do POST
 $usuario_id = $_SESSION['usuario']['id'];

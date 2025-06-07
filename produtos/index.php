@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once './includes/db.php';
 
-$stmt = $pdo->query("SELECT * FROM produtos WHERE stock > 0");
+$stmt = $pdo->query("SELECT * FROM produtos WHERE stock > 0 AND status = 'aprovado'");
 $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

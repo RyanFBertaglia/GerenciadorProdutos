@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 protectFornecedorPage();
 
@@ -18,8 +18,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     
     if ($produto) {
         // Remover imagem se existir
-        if (!empty($produto['image']) && file_exists("../assets/uploads/" . $produto['image'])) {
-            unlink("../assets/uploads/" . $produto['image']);
+        if (!empty($produto['image']) && file_exists("./assets/uploads/" . $produto['image'])) {
+            unlink("./assets/uploads/" . $produto['image']);
         }
         
         // Remover do banco
@@ -82,19 +82,19 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/style/admin/dash-fornecedor.css">
-    <link rel="stylesheet" href="../static/style/main.css">
-    <link rel="stylesheet" href="../static/style/tipografia.css">
+    <link rel="stylesheet" href="./static/style/admin/dash-fornecedor.css">
+    <link rel="stylesheet" href="./static/style/main.css">
+    <link rel="stylesheet" href="./static/style/tipografia.css">
     </head>
 <body>
-    <?php include '../static/elements/sidebar-fornecedor.php'; ?>
+    <?php include './static/elements/sidebar-fornecedor.php'; ?>
     <div class="container-fluid">
         <div class="row">
             <main class="w-100 py-4 px-3">
                 <br><br>
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom w-100">
                 <h2>Meus Produtos</h2>
-                    <a href="/fornecedor/add-product.php" class="btn btn-primary" id="novo-produto">
+                    <a href="/fornecedor/cadastrar-produto" class="btn btn-primary" id="novo-produto">
                         <i class="bi bi-plus-circle"></i> Novo Produto
                     </a>
                 </div>
@@ -121,7 +121,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <tr>
                                 <td>
                                     <?php if (!empty($produto['image'])): ?>
-                                        <img src="../static/uploads/<?= htmlspecialchars($produto['image']) ?>" 
+                                        <img src="./static/uploads/<?= htmlspecialchars($produto['image']) ?>" 
                                              alt="<?= htmlspecialchars($produto['nome']) ?>" 
                                              class="product-image">
                                     <?php else: ?>

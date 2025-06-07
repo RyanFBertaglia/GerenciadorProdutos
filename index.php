@@ -47,6 +47,17 @@ switch ($uri) {
         require './fornecedor/produtos.php';
         break;
 
+ 
+    /*case '/fornecedor/remover-produto':
+        protectFornecedorPage();
+        require './fornecedor/remover-produto.php';
+        break;
+
+    case '/fornecedor/editar-produto':
+        protectFornecedorPage();
+        require './fornecedor/editar-produto.php';
+        break;*/
+
     // === ROTAS GERAIS ===
     case '/produto':
         require './produtos/index.php';
@@ -71,10 +82,11 @@ switch ($uri) {
         break;
 
     case '/remover':
-        protectPage();
         require './carrinho/remover.php';
         break;
-
+    case '/carrinho/atualizar':
+        require './carrinho/atualizar.php';
+        break;
     // === ROTAS DE AUTENTICAÇÃO ===
     case '/logout':
         logout();
@@ -96,8 +108,8 @@ switch ($uri) {
         break;    
         
     case '/login-admin':
-        if (isLoggedIn()) {
-            redirect('./admin.dashboard');
+        if (isAdmin()) {
+            redirect('./admin/dashboard');
         }
         require './admin/login.php';
         break;

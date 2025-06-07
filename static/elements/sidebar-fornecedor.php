@@ -70,12 +70,6 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
             }
         });
 
-        // Redirecionamento via router
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const route = this.getAttribute('data-route');
-                window.location.href = route;
-            });
-        });
+ 
     });
 </script>

@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once './includes/db.php';
 require_once './includes/auth.php';
 
-if (isAdminLoggedIn()) {
+if (isAdmin()) {
     header('Location: /admin/dashboard');
     exit;
 }
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Prepare statement with email verification
             $stmt = $pdo->prepare("
-                SELECT id, nome, email, senha, nivel_acesso 
+                SELECT id, nome, email, senha 
                 FROM admin 
                 WHERE email = ? 
                 LIMIT 1
@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'id' => $admin['id'],
                     'nome' => $admin['nome'],
                     'email' => $admin['email'],
-                    'nivel_acesso' => $admin['nivel_acesso'],
                     'last_login' => time()
                 ];
                 
@@ -129,17 +128,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     
-    <main class="container">
-        <div class="login-container">
-            <h2><i class="fas fa-lock"></i> Acesso Administrativo</h2>
+    <?php include './static/elements/sidebar-main.php'; ?>
+    <div class="container-fluid">
             
+            
+            
+
+            <form method="POST" autocomplete="off">
             <?php if ($erro): ?>
                 <div class="erro">
                     <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
-
-            <form method="POST" autocomplete="off">
+            <h2><i class="fas fa-lock"></i> Acesso Administrativo</h2>
                 <div class="form-group">
                     <label for="email"><i class="fas fa-envelope"></i> E-mail</label>
                     <input type="email" id="email" name="email" class="form-control" 
@@ -155,8 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-sign-in-alt"></i> Entrar
                 </button>
             </form>
-        </div>
-    </main>
+    </div>
 
 </body>
 </html>

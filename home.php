@@ -32,7 +32,7 @@
     </div>
     
 
-    <a href="/admin/dashboard.php" class="website-link" target="_blank">
+    <a href="/admin/dashboard" class="website-link" target="_blank">
       Administração <i class="fas fa-globe"></i>
     </a>
 

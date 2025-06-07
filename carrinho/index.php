@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 // Redirect to login if not authenticated
 if (!isLoggedIn()) {
@@ -46,13 +46,34 @@ try {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../static/style/main.css">
-  <link rel="stylesheet" href="../static/style/tipografia.css">
+  <link rel="stylesheet" href="./static/style/main.css">
+  <link rel="stylesheet" href="./static/style/tipografia.css">
   <style>
+    body {
+        height: 100vh;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        grid-template-areas: "aside main";
+        font-family: 'Montserrat', sans-serif;
+        transition: all 0.3s ease;
+    }
+    .main-content {
+        padding-left: 10px; /* Largura da sidebar */
+        transition: padding-left 0.3s ease;
+        min-height: 100vh;
+    }
+    body.collapsed .main-content {
+        padding-left: 0;
+    }
     main {
-        grid-area: main;
         font-family: 'Inter', sans-serif;
-        padding: 2rem;
+        width: 100%;
+        height: 100vh;
+        overflow-y: auto;
+        grid-column: 2;
+        padding: 0;
+        margin: 0;
     }
     table {
         width: 100%;
@@ -98,12 +119,17 @@ try {
         padding: 2rem;
         font-size: 1.2rem;
     }
+
+
+    body.collapsed aside {
+        transform: translateX(-100%);
+    }
   </style>
 </head>
 <body>
-<?php include '../static/elements/sidebar-main.php'; ?>
+<?php include './static/elements/sidebar-main.php'; ?>
 
-<main>
+<main class="container-fluid main-content">
     <h1>Meu Carrinho</h1>
 
     <?php if (isset($_SESSION['erro'])): ?>
@@ -137,7 +163,7 @@ try {
                 <tr>
                     <td>
                         <div class="product-cell">
-                            <img src="../uploads/<?= htmlspecialchars($item['image']) ?>" 
+                            <img src="./static/uploads/<?= htmlspecialchars($item['image']) ?>" 
                                  alt="<?= htmlspecialchars($item['description']) ?>" 
                                  class="product-img">
                             <div>
@@ -161,7 +187,7 @@ try {
                     <td>R$ <?= number_format($item['price'], 2, ',', '.') ?></td>
                     <td>R$ <?= number_format($item['price'] * $item['quantidade'], 2, ',', '.') ?></td>
                     <td class="actions">
-                        <a href="/carrinho/remover?id=<?= $item['id'] ?>" 
+                        <a href="/remover?id=<?= $item['id'] ?>" 
                            class="btn btn-danger"
                            onclick="return confirm('Remover este item do carrinho?')">
                             <i class="fas fa-trash"></i> Remover

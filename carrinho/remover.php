@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once './includes/db.php';
 require_once './includes/auth.php';
 
-protectAdminPage(); // Or use protectPage() if this should be available to regular users too
+protectPage(); // Or use protectPage() if this should be available to regular users too
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 

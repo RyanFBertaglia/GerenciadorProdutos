@@ -10,6 +10,7 @@ body {
 
 /* Container principal */
 .container-fluid {
+    margin: 0 auto;
     grid-area: main;
     padding: 20px;
     min-height: 100vh;
@@ -93,3 +94,4 @@ body {
     background-color: #dc3545;
     color: white;
 }
+

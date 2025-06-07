@@ -1,6 +1,8 @@
-/* ===== ESTILOS EXCLUSIVOS DA SIDEBAR ===== */
-
-
+.container-fluid {
+    grid-area: main;
+    padding: 20px;
+    min-height: 100vh;
+}
 
 body {
     margin: 0;

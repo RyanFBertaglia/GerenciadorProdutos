@@ -45,6 +45,7 @@ $produtosAprovados = $stmt->fetch()['total'];
 
 
     <style>
+        
         .status-badge {
             padding: 3px 8px;
             border-radius: 3px;
@@ -70,7 +71,7 @@ $produtosAprovados = $stmt->fetch()['total'];
 </head>
 <body>
     <?php include './static/elements/sidebar-fornecedor.php'; ?>
-    <div class="container-fluid">
+    <div class="container-fluid main-content">
         <div class="row">
         
 

@@ -17,7 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $idProduto = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-$adminId = $_SESSION['admin']['id'];
+$adminId = $_SESSION['usuario']['id'];
+
 
 try {
     // Start transaction
@@ -36,18 +37,6 @@ try {
     $stmt->execute([$adminId, $idProduto]);
     
     if ($stmt->rowCount() > 0) {
-        // Log the approval
-        $logStmt = $pdo->prepare("
-            INSERT INTO produtos_log 
-            (produto_id, acao, admin_id, dados) 
-            VALUES (?, 'aprovação', ?, ?)
-        ");
-        $logData = json_encode([
-            'ip' => $_SERVER['REMOTE_ADDR'],
-            'user_agent' => $_SERVER['HTTP_USER_AGENT']
-        ]);
-        $logStmt->execute([$idProduto, $adminId, $logData]);
-        
         $_SESSION['sucesso'] = "Produto aprovado com sucesso!";
     } else {
         $_SESSION['erro'] = "Produto não encontrado ou já foi processado";

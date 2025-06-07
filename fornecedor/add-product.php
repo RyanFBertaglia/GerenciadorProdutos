@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 protectFornecedorPage();
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $imagemNome = uniqid() . '.' . $extensao;
-            $destino = "../static/uploads/" . $imagemNome;
+            $destino = "./static/uploads/" . $imagemNome;
 
             if (!move_uploaded_file($_FILES['image']['tmp_name'], $destino)) {
                 throw new Exception("Erro ao fazer upload da imagem");
@@ -53,14 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($sucesso) {
             $_SESSION['sucesso'] = "Produto cadastrado com sucesso! Aguarde aprovação.";
-            header('Location: /fornecedor/dashboard.php');
+            header('Location: /fornecedor/dashboard');
             exit;
         }
     } catch (Exception $e) {
         $erro = $e->getMessage();
         // Remove a imagem se houve erro após o upload
-        if (!empty($imagemNome) && file_exists("../assets/uploads/" . $imagemNome)) {
-            unlink("../static/uploads/" . $imagemNome);
+        if (!empty($imagemNome) && file_exists("./assets/uploads/" . $imagemNome)) {
+            unlink("./static/uploads/" . $imagemNome);
         }
     }
 }
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Cadastrar Produto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/style/main.css">
+    <link rel="stylesheet" href="./static/style/main.css">
 
     <style>
         .container-fluid{
@@ -88,9 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <?php include '../static/elements/sidebar-fornecedor.php'; ?>
+    <?php include './static/elements/sidebar-fornecedor.php'; ?>
     <div class="container-fluid">
-    <main>
         <br><br><br>
         <h2>Cadastrar Novo Produto</h2>
         
@@ -125,9 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <button type="submit" class="btn btn-primary">Cadastrar</button>
-            <a href="/fornecedor/produtos.php" class="btn btn-secondary">Cancelar</a>
+            <a href="/fornecedor/produtos" class="btn btn-secondary">Cancelar</a>
         </form>
-    </main>
     </div>
 </body>
 </html>
