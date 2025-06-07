@@ -72,10 +72,8 @@ $produtosAprovados = $stmt->fetch()['total'];
 <body>
     <?php include './static/elements/sidebar-fornecedor.php'; ?>
     <div class="container-fluid main-content">
-        <div class="row">
         
-
-            <!-- Main Content -->
+    <div class="row">
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
                 <h2 style="color: white;" >Meu Dashboard</h2>
                 

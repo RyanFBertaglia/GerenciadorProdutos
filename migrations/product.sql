@@ -11,11 +11,12 @@ CREATE TABLE produtos (
     status ENUM('pendente', 'aprovado', 'rejeitado') DEFAULT 'pendente',
     motivo_rejeicao VARCHAR(255) DEFAULT NULL,
     aprovado_por INT DEFAULT NULL,
+    vendidos INT DEFAULT 0,
     data_aprovacao DATETIME DEFAULT NULL,
-    FOREIGN KEY (aprovado_por) REFERENCES usuarios(id)
+    FOREIGN KEY (aprovado_por) REFERENCES admin(id)
 );
 
-
+-- Adicionar campo vendidos
 -- Produto pendente
 INSERT INTO produtos (
     price, description, supplier, stock, image, status

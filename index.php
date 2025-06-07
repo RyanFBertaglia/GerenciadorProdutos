@@ -47,7 +47,10 @@ switch ($uri) {
         require './fornecedor/produtos.php';
         break;
 
- 
+    case '/fornecedor/pedidos':
+        protectFornecedorPage();
+        require './fornecedor/pedidos.php';
+        break; 
     /*case '/fornecedor/remover-produto':
         protectFornecedorPage();
         require './fornecedor/remover-produto.php';
@@ -74,6 +77,16 @@ switch ($uri) {
     case '/user/carrinho':
         protectPage();
         require './carrinho/index.php';
+        break;
+
+    case '/user/pedidos':
+        protectPage();
+        require './produtos/meus-pedidos.php';
+        break;
+
+    case '/checkout':
+        protectPage();
+        require './finalizar/checkout.php';
         break;
 
     case '/adicionar':

@@ -15,7 +15,7 @@ $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$produto) {
     $_SESSION['erro'] = "Produto não encontrado ou você não tem permissão para editá-lo";
-    header('Location: /fornecedor/produtos.php');
+    header('Location: /fornecedor/produto');
     exit;
 }
 
