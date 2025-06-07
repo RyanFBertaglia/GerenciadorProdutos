@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 protectFornecedorPage();
 
@@ -39,9 +39,9 @@ $produtosAprovados = $stmt->fetch()['total'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
 
-    <link rel="stylesheet" href="../static/style/admin/dash-fornecedor.css">
-    <link rel="stylesheet" href="../static/style/main.css">
-    <link rel="stylesheet" href="../static/style/tipografia.css">
+    <link rel="stylesheet" href="./static/style/admin/dash-fornecedor.css">
+    <link rel="stylesheet" href="./static/style/main.css">
+    <link rel="stylesheet" href="./static/style/tipografia.css">
 
 
     <style>
@@ -69,7 +69,7 @@ $produtosAprovados = $stmt->fetch()['total'];
     </style>
 </head>
 <body>
-    <?php include '../static/elements/sidebar-fornecedor.php'; ?>
+    <?php include './static/elements/sidebar-fornecedor.php'; ?>
     <div class="container-fluid">
         <div class="row">
         

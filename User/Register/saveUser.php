@@ -142,7 +142,8 @@ if ($stmt_insere === false) {
 $stmt_insere->bind_param("sssssss", $nome, $email, $senha_hash, $cpf, $phone, $endereco_completo, $birthdate);
 
 if ($stmt_insere->execute()) {
-    header("Location: /user/login.php?cadastro=sucesso");
+    $_SESSION['erro'] = "";
+    header("Location: /login");
     exit;
 } else {
     $_SESSION['erro'] = "Erro ao cadastrar: " . $stmt_insere->error;

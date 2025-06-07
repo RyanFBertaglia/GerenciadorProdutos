@@ -1,9 +1,9 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 if (isFornecedor()) {
-    header('Location: /fornecedor/dashboard.php');
+    header('Location: /fornecedor/dashboard');
     exit;
 }
 
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = $_POST['senha'];
     
     if (loginFornecedor($email, $senha, $pdo)) {
-        header('Location: /fornecedor/dashboard.php');
+        header('Location: /fornecedor/dashboard');
         exit;
     } else {
         $erro = "Email ou senha inválidos";
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>  
 
-    <?php include '../static/elements/sidebar-main.php'; ?>
+    <?php include './static/elements/sidebar-main.php'; ?>
     <div class="container-fluid">
     <form method="POST">
         <h2>Área do Fornecedor</h2>
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" name="senha" placeholder="Senha" required>
         <div class="btn-container">
         <button type="submit" class="btn">Entrar</button>
-        <a href="/user/registerSupplier.php" class="btn">Cadastrar-se como fornecedor</a>
+        <a href="/cadastro-fornecedor" class="btn">Cadastrar-se como fornecedor</a>
         </div>
 
     </form>

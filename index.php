@@ -1,43 +1,150 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mancha Gestões</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="./static/style/paginaInicial.css">
-  <link rel="stylesheet" href="./static/style/menu.css">
-  <link rel="stylesheet" href="./static/style/tipografia.css">
-  <link rel="stylesheet" href="./static/style/main.css">
-</head>
-<body>
+<?php
+require_once 'config.php';
+require_once 'includes/auth.php';
 
-  <?php include './static/elements/sidebar-main.php'; ?>
+$basePath = parse_url(Config::getBaseUrl(), PHP_URL_PATH) ?: '';
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = str_replace($basePath, '', $requestUri);
+$uri = '/' . trim($uri, '/');
 
+if ($uri === '/') {
+    $uri = '/';
+}
 
-  <!-- Conteúdo principal -->
-  <main>
-    <br>
-    <br>
-    <div class="container">
-    <h1>Comece a comprar e tenha</h1>
-    <h1>20% de desconto em sua</h1>
-    <h1>primeira compra!</h1>
+switch ($uri) {
+    case '/':
+    case '/home':
+        require './home.php';
+        break;
 
-    <p>Comece a anunciar, tenha uma boa avaliação e pagaremos todos os seus fretes!!</p>
+    case '/login':
+        if (isLoggedIn()) {
+            redirect('home');
+        }
+        require './user/login.php';
+        break; 
 
-    <button class="btn-start" onclick="window.location.href='/user/login.php'">Começar</button>
-    </div>
+    case '/login-fornecedor':
+        if (isFornecedor()) {
+            redirect('fornecedor/dashboard');
+        }
+        require './fornecedor/login.php';
+        break;
+
+    // === ROTAS DO FORNECEDOR ===
+    case '/fornecedor/dashboard':
+        protectFornecedorPage();
+        require './fornecedor/dashboard.php';
+        break;
+
+    case '/fornecedor/cadastrar-produto':
+        protectFornecedorPage();
+        require './fornecedor/add-product.php';
+        break;
     
+    case '/fornecedor/produtos':
+        protectFornecedorPage();
+        require './fornecedor/produtos.php';
+        break;
 
-    <a href="/admin/dashboard.php" class="website-link" target="_blank">
-      Administração <i class="fas fa-globe"></i>
-    </a>
+    // === ROTAS GERAIS ===
+    case '/produto':
+        require './produtos/index.php';
+        break;
 
-    <img src="./static/img/predio.png" alt="Prédio" class="building-img" />
-  </main>
-  
-</body>
-</html>
+    case '/produto/detalhes':
+        $id = getParam('id');
+        if (!$id) {
+            redirect('produtos', ['error' => 'Produto não encontrado']);
+        }
+        require './produtos/detalhes.php';
+        break;
+
+    case '/user/carrinho':
+        protectPage();
+        require './carrinho/index.php';
+        break;
+
+    case '/adicionar':
+        protectPage();
+        require './carrinho/adicionar.php';
+        break;
+
+    case '/remover':
+        protectPage();
+        require './carrinho/remover.php';
+        break;
+
+    // === ROTAS DE AUTENTICAÇÃO ===
+    case '/logout':
+        logout();
+        redirect('login');
+        break;
+
+    case '/cadastro-usuario':
+        if (isLoggedIn()) {
+            redirect('home');
+        }
+        require './user/registerUser.php';
+        break;
+
+    case '/cadastro-fornecedor':
+        if (isLoggedIn()) {
+            redirect('fornecedor/dashboard');
+        }
+        require './user/registerSupplier.php';
+        break;    
+        
+    case '/login-admin':
+        if (isLoggedIn()) {
+            redirect('./admin.dashboard');
+        }
+        require './admin/login.php';
+        break;
+    
+    // === ROTAS ADMIN ===
+    case '/admin/dashboard':
+        protectAdminPage();
+        require './admin/dashboard.php';
+        break;
+
+    case '/admin/pendentes':
+        protectAdminPage();
+        require './admin/pendentes.php';
+        break;
+
+    case '/admin/fornecedores':
+        protectAdminPage();
+        require './admin/fornecedores.php';
+        break;  
+
+    case '/admin/usuarios':
+        protectAdminPage();
+        require './admin/usuarios.php';
+        break;
+
+    case '/admin/aprovar-produto':
+        protectAdminPage();
+        require './admin/aprovar-produto.php';
+        break;
+    
+    case '/admin/rejeitar-produto':
+        protectAdminPage();
+        require './admin/rejeitar-produto.php';
+        break;
+
+        
+    // Página 404
+    default:
+        http_response_code(404);
+        echo "<!DOCTYPE html>
+        <html>
+        <head><title>404 - Página não encontrada</title></head>
+        <body>
+            <h1>404 - Página não encontrada</h1>
+            <p><a href='" . base_url() . "'>Voltar ao início</a></p>
+        </body>
+        </html>";
+        break;
+}
+?>

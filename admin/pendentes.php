@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -49,7 +49,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endif; ?>
                     
                     <div class="acoes-admin">
-                        <form action="aprovar-produto.php" method="post" style="display: inline;">
+                        <form action="/aprovar-produto" method="post" style="display: inline;">
                             <input type="hidden" name="id" value="<?= $produto['idProduct'] ?>">
                             <button type="submit" class="btn btn-success">Aprovar</button>
                         </form>
@@ -59,7 +59,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </button>
                         
                         <div id="rejeitar-<?= $produto['idProduct'] ?>" style="display: none; margin-top: 10px;">
-                            <form action="rejeitar-produto.php" method="post">
+                            <form action="/rejeitar-produto" method="post">
                                 <input type="hidden" name="id" value="<?= $produto['idProduct'] ?>">
                                 <div class="form-group">
                                     <label>Motivo da Rejeição:</label>

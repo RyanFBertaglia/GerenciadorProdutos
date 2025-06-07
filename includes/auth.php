@@ -14,7 +14,7 @@ function protectPage() {
     if (!isLoggedIn()) {
         $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
         $_SESSION['erro'] = "Você precisa estar logado para acessar esta página";
-        header('Location: /user/login.php');
+        header('Location: /login');
         exit;
     }
 }
@@ -125,7 +125,7 @@ function protectAdminPage() {
     if (!isAdmin()) {
         $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
         $_SESSION['erro'] = "Você precisa estar logado como administrador para acessar esta página";
-        header('Location: /admin/login.php');
+        header('Location: /login-admin');
         exit;
     }
 }
@@ -144,10 +144,10 @@ function isFornecedor() {
  * Protege uma página para acesso exclusivo de fornecedores
  */
 function protectFornecedorPage() {
-    if (!isFornecedor()) {
+    if (!isFornecedor()) { 
         $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'] ?? '/';
         $_SESSION['erro'] = "Acesso restrito a fornecedores";
-        header('Location: /fornecedor/login.php');
+        header('Location: /login-fornecedor');
         exit;
     }
 }

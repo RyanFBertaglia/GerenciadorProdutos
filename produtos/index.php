@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../includes/db.php';
+require_once './includes/db.php';
 
 $stmt = $pdo->query("SELECT * FROM produtos WHERE stock > 0");
 $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -14,26 +14,25 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Produtos</title>
-  <link rel="stylesheet" href="../static/style/tipografia.css">
-  <link rel="stylesheet" href="../static/style/main.css">
-  <link rel="stylesheet" href="../static/style/loja.css">
+  <link rel="stylesheet" href="./static/style/tipografia.css">
+  <link rel="stylesheet" href="./static/style/main.css">
+  <link rel="stylesheet" href="./static/style/loja.css">
 
 </head>
 <body>
 
-    <?php include '../static/elements/sidebar-main.php'; ?>
+    <?php include './static/elements/sidebar-main.php'; ?>
 
     <main class="produtos-container" class="container-fluid">
     <div class="produtos-grid">
         <?php foreach ($produtos as $produto): ?>
         <div class="produto-card">
-            <img src="../static/uploads/<?= htmlspecialchars($produto['image']) ?>" alt="<?= htmlspecialchars($produto['description']) ?>">
+            <img src="./static/uploads/<?= htmlspecialchars($produto['image']) ?>" alt="<?= htmlspecialchars($produto['description']) ?>">
             <h3><?= htmlspecialchars($produto['description']) ?></h3>
             <p>Fornecedor: <?= htmlspecialchars($produto['supplier']) ?></p>
             <p>R$ <?= number_format($produto['price'], 2, ',', '.') ?></p>
             <p>Disponível: <?= $produto['stock'] ?> unidades</p>
-            <a href="detalhes.php?id=<?= $produto['idProduct'] ?>">Ver Detalhes</a>
-        </div>
+            <a href="/produto/detalhes?id=<?= $produto['idProduct'] ?>">Ver Detalhes</a>        </div>
         <?php endforeach; ?>
     </div>
     </main>

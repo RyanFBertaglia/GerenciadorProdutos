@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -31,15 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="./static/style/login.css">
-    <link rel="stylesheet" href="../static/style/main.css">
-    <link rel="stylesheet" href="../static/style/login.css">    
+    <link rel="stylesheet" href="./static/style/main.css">
+    <link rel="stylesheet" href="./static/style/login.css">    
 </head>
 <body>
 
-<?php include '../static/elements/sidebar-main.php'; ?>
+<?php include './static/elements/sidebar-main.php'; ?>
 
 <div class="container-fluid">
-        <form method="POST" action="login.php">
+        <form method="POST">
             <h2>Login</h2>
             <?php if ($erro): ?>
                 <div class="erro"><?= htmlspecialchars($erro) ?></div>
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="senha" placeholder="Senha" required>
             <div class="btn-container">
         <button type="submit" class="btn">Entrar</button>
-        <a href="/user/registerUser.php" class="btn">Ainda não tem uma conta? Cadastrar-se</a>
+        <a href="/cadastro-usuario" class="btn">Ainda não tem uma conta? Cadastrar-se</a>
         </div>
         </form>
     </div> 

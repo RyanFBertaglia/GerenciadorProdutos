@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Redireciona todas as requisições para index.php (onde está seu router)
+# Exceto arquivos que realmente existem (CSS, JS, imagens, etc.)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Opcional: Remover extensão .php das URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]

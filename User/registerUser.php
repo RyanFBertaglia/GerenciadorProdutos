@@ -38,11 +38,11 @@
     </style>
 </head>
 <body>
-    <?php include '../static/elements/sidebar-main.php'; ?>
+    <?php include './static/elements/sidebar-main.php'; ?>
 
     <div class="container-fluid">
-        <form action="./register/saveUser.php" method="POST" onsubmit="return validarFormulario()">
-            <img src="../static/img/predio.png" alt="Prédio" class="building-img" style="display: block; margin: 0 auto 0px;">
+        <form action="./user/register/saveUser.php" method="POST" onsubmit="return validarFormulario()">
+            <img src="./static/img/predio.png" alt="Prédio" class="building-img" style="display: block; margin: 0 auto 0px;">
             <h2 style="text-align: center;">Cadastro Completo</h2>
 
             <div class="form-group">
@@ -113,7 +113,7 @@
 
             <div class="btn-container">
                 <button type="submit" class="btn">Cadastrar</button>
-                <a href="/user/login.php" class="btn">Já possui conta? Login</a>
+                <a href="/login" class="btn">Já possui conta? Login</a>
             </div>
         </form>
     </div>
@@ -131,7 +131,7 @@
             
             cepError.textContent = '';
             
-            fetch(`../includes/buscar-cep.php?cep=${cep}`)
+            fetch(`./includes/buscar-cep.php?cep=${cep}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.erro) {
@@ -176,6 +176,6 @@
     return true;
 }
     </script>
-    <script src="../static/js/validation.js"></script>
+    <script src="./static/js/validation.js"></script>
 </body>
 </html>

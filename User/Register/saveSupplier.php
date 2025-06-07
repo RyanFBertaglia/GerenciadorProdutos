@@ -110,8 +110,13 @@ if ($stmt_insere === false) {
 $stmt_insere->bind_param("sssss", $nome, $email, $telefone, $cpf, $senha_hash);
 
 if ($stmt_insere->execute()) {
-    // Cadastro bem-sucedido
-    header("Location: /fornecedor/dashboard.php=" . urlencode($nome) . "&email=" . urlencode($email));
+    $_SESSION['erro'] = "";
+    
+
+    redirect('fornecedor/dashboard', [
+        'nome' => $nome,
+        'email' => $email,
+    ]);
     exit();
 } else {
     $_SESSION['erro'] = "Erro ao cadastrar: " . $stmt_insere->error;

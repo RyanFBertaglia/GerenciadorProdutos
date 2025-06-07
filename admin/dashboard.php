@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 protectAdminPage();
 
@@ -22,7 +22,7 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     <title>Painel Administrativo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../static/style/admin/dashboard.css">
+    <link rel="stylesheet" href="./static/style/admin/dashboard.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -32,13 +32,13 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="/admin/dashboard.php">
+                            <a class="nav-link active" href="/admin/dashboard">
                                 <i class="bi bi-speedometer2 me-2"></i>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/pendentes.php">
+                            <a class="nav-link" href="/admin/pendentes">
                                 <i class="bi bi-card-checklist me-2"></i>
                                 Produtos Pendentes
                                 <?php if ($produtosPendentes > 0): ?>
@@ -47,13 +47,13 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/fornecedores.php">
+                            <a class="nav-link" href="/admin/fornecedores">
                                 <i class="bi bi-people me-2"></i>
                                 Fornecedores
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/produtos/index.php">
+                            <a class="nav-link" href="/produto">
                                 <i class="bi bi-box-seam me-2"></i>
                                 Produtos
                             </a>
@@ -65,7 +65,7 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                             </a>
                         </li>
                         <li class="nav-item mt-3">
-                            <a class="nav-link" href="logout.php">
+                            <a class="nav-link" href="/logout">
                                 <i class="bi bi-box-arrow-right me-2"></i>
                                 Sair
                             </a>
@@ -95,7 +95,7 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                                 <i class="bi bi-people card-icon"></i>
                                 <h5 class="card-title">Fornecedores</h5>
                                 <h2 class="card-text"><?= $totalFornecedores ?></h2>
-                                <a href="/admin/fornecedores.php" class="btn btn-light btn-sm">Ver todos</a>
+                                <a href="/admin/fornecedores" class="btn btn-light btn-sm">Ver todos</a>
                             </div>
                         </div>
                     </div>
@@ -106,7 +106,7 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                                 <i class="bi bi-box-seam card-icon"></i>
                                 <h5 class="card-title">Produtos Ativos</h5>
                                 <h2 class="card-text"><?= $totalProdutos ?></h2>
-                                <a href="/produtos/index.php" class="btn btn-light btn-sm">Ver todos</a>
+                                <a href="/produto" class="btn btn-light btn-sm">Ver todos</a>
                             </div>
                         </div>
                     </div>
@@ -117,7 +117,7 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                                 <i class="bi bi-hourglass card-icon"></i>
                                 <h5 class="card-title">Pendentes</h5>
                                 <h2 class="card-text"><?= $produtosPendentes ?></h2>
-                                <a href="/admin/pendentes.php" class="btn btn-light btn-sm">Aprovar</a>
+                                <a href="/admin/pendentes" class="btn btn-light btn-sm">Aprovar</a>
                             </div>
                         </div>
                     </div>

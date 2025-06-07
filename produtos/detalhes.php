@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../includes/db.php';
+require_once './includes/db.php';
 
 $id = $_GET['id'] ?? 0;
 $stmt = $pdo->prepare("SELECT * FROM produtos WHERE idProduct = ?");
@@ -16,13 +16,13 @@ if (!$produto) {
 ?>
 
 <h1><?= htmlspecialchars($produto['description']) ?></h1>
-<img src="../static/uploads/<?= htmlspecialchars($produto['image']) ?>" alt="<?= htmlspecialchars($produto['description']) ?>">
+<img src="./static/uploads/<?= htmlspecialchars($produto['image']) ?>" alt="<?= htmlspecialchars($produto['description']) ?>">
 <p>Fornecedor: <?= htmlspecialchars($produto['supplier']) ?></p>
 <p>Preço: R$ <?= number_format($produto['price'], 2, ',', '.') ?></p>
 <p>Estoque disponível: <?= $produto['stock'] ?> unidades</p>
 
 <?php if ($produto['stock'] > 0): ?>
-<form action="/carrinho/adicionar.php" method="post">
+<form action="/adicionar" method="post">
     <input type="hidden" name="produto_id" value="<?= $produto['idProduct'] ?>">
     <input type="number" name="quantidade" value="1" min="1" max="<?= $produto['stock'] ?>">
     <button type="submit">Adicionar ao Carrinho</button>

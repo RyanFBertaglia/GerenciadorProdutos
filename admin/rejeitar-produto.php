@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/auth.php';
+require_once './includes/db.php';
+require_once './includes/auth.php';
 
 protectAdminPage();
 
@@ -30,6 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['erro'] = "Erro ao rejeitar produto: " . $e->getMessage();
     }
     
-    header('Location: pendentes.php');
+    header('Location: /admin/pendentes');
     exit;
 }

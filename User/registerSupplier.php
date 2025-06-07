@@ -6,8 +6,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../static/style/main.css">
-    <link rel="stylesheet" href="../static/style/register.css">
+    <link rel="stylesheet" href="./static/style/main.css">
+    <link rel="stylesheet" href="./static/style/register.css">
     <style>
         body{
             min-height: 105vh;
@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <?php include '../static/elements/sidebar-main.php'; ?>
+    <?php include './static/elements/sidebar-main.php'; ?>
 
     <div class="container-fluid">
         <form action="./register/saveSupplier.php" method="POST" onsubmit="return validarFormulario()">
@@ -57,7 +57,7 @@
 
             <div class="btn-container">
                 <button type="submit" class="btn">Cadastrar</button>
-                <a href="/fornecedor/login.php" class="btn">Já possui conta? Login</a>
+                <a href="/login-fornecedor" class="btn">Já possui conta? Login</a>
             </div>
         </form>
     </div>
