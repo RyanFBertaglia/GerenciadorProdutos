@@ -47,9 +47,19 @@ switch ($uri) {
         require './fornecedor/produtos.php';
         break;
 
+    case '/fornecedor/orders':
+        protectFornecedorPage();
+        require './fornecedor/orders.php';
+        break;
+
     case '/fornecedor/pedidos':
         protectFornecedorPage();
         require './fornecedor/pedidos.php';
+        break; 
+
+    case '/fornecedor/devolucoes':
+        protectFornecedorPage();
+        require './fornecedor/devolucoes.php';
         break; 
     /*case '/fornecedor/remover-produto':
         protectFornecedorPage();

@@ -16,7 +16,6 @@ $sucesso = $_SESSION['sucesso'] ?? null;
 unset($_SESSION['erro'], $_SESSION['sucesso']);
 
 $total = 0;
-$idFornecedor = null;
 $itens = [];
 
 try {
@@ -33,9 +32,6 @@ try {
     if (empty($itens)) {
         throw new Exception("Carrinho vazio.");
     }
-
-    // Pega fornecedor do primeiro item (assumindo todos do mesmo fornecedor)
-    $idFornecedor = $itens[0]['supplier'];
 
     // Calcula total
     $total = array_reduce($itens, fn($soma, $item) => $soma + ($item['price'] * $item['quantidade']), 0);
@@ -65,42 +61,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
             throw new Exception("Saldo insuficiente.");
         }
 
-        // Insere pedido (status inicial: 'Pendente')
+        // Prepara statements que serão reutilizados
         $stmtPedido = $pdo->prepare("INSERT INTO Orders (idUser, dataPedido, status, total, idFornecedor) VALUES (?, NOW(), 'Pendente', ?, ?)");
-        $stmtPedido->execute([$usuario_id, $total, $idFornecedor]);
-        $orderId = $pdo->lastInsertId();
-
-        // Insere itens do pedido
         $stmtItem = $pdo->prepare("INSERT INTO OrderItems (idOrder, idProduct, quantity, value) VALUES (?, ?, ?, ?)");
-        foreach ($itens as $item) {
-            $stmtItem->execute([$orderId, $item['idProduct'], $item['quantidade'], $item['price']]);
-        }
-
-        // Atualiza vendidos no produto
         $stmtUpdateVendidos = $pdo->prepare("UPDATE produtos SET vendidos = vendidos + ? WHERE idProduct = ?");
-        foreach ($itens as $item) {
-            $stmtUpdateVendidos->execute([$item['quantidade'], $item['idProduct']]);
+        $stmtPagamento = $pdo->prepare("INSERT INTO Payments (idUser, idOrder, status, datePayment, total) VALUES (?, ?, 'Pago', NOW(), ?)");
+
+        $pedidosCriados = [];
+
+        // Processa cada produto individualmente
+        for ($i = 0; $i < count($itens); $i++) {
+            $item = $itens[$i];
+            $subtotal = $item['price'] * $item['quantidade'];
+            $idFornecedor = $item['supplier'];
+
+            // Cria um pedido individual para este produto/fornecedor
+            $result = $stmtPedido->execute([$usuario_id, $subtotal, $idFornecedor]);
+            if (!$result) {
+                throw new Exception("Erro ao criar pedido para produto {$item['description']}: " . implode(", ", $stmtPedido->errorInfo()));
+            }
+            
+            $orderId = $pdo->lastInsertId();
+            $pedidosCriados[] = $orderId;
+
+            // Insere o item no pedido
+            $result = $stmtItem->execute([$orderId, $item['idProduct'], $item['quantidade'], $item['price']]);
+            if (!$result) {
+                throw new Exception("Erro ao inserir item do pedido {$orderId}: " . implode(", ", $stmtItem->errorInfo()));
+            }
+
+            // Verifica se há estoque suficiente
+            $stmtEstoque = $pdo->prepare("SELECT stock FROM produtos WHERE idProduct = ?");
+            $stmtEstoque->execute([$item['idProduct']]);
+            $produtoEstoque = $stmtEstoque->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$produtoEstoque) {
+                throw new Exception("Produto {$item['description']} não encontrado.");
+            }
+            
+            if ($produtoEstoque['stock'] < $item['quantidade']) {
+                throw new Exception("Estoque insuficiente para o produto {$item['description']}. Disponível: {$produtoEstoque['stock']}, Solicitado: {$item['quantidade']}");
+            }
+
+            // Atualiza vendidos no produto
+            $result = $stmtUpdateVendidos->execute([$item['quantidade'], $item['idProduct']]);
+            if (!$result) {
+                throw new Exception("Erro ao atualizar produtos vendidos para {$item['description']}: " . implode(", ", $stmtUpdateVendidos->errorInfo()));
+            }
+
+            // Reduz o estoque do produto
+            $stmtReduceEstoque = $pdo->prepare("UPDATE produtos SET stock = stock - ? WHERE idProduct = ?");
+            $result = $stmtReduceEstoque->execute([$item['quantidade'], $item['idProduct']]);
+            if (!$result) {
+                throw new Exception("Erro ao reduzir estoque do produto {$item['description']}: " . implode(", ", $stmtReduceEstoque->errorInfo()));
+            }
+
+            // Cria pagamento individual para este pedido
+            $result = $stmtPagamento->execute([$usuario_id, $orderId, $subtotal]);
+            if (!$result) {
+                throw new Exception("Erro ao criar pagamento para pedido {$orderId}: " . implode(", ", $stmtPagamento->errorInfo()));
+            }
         }
 
-        // Insere pagamento (status inicial: 'Pago' — você pode ajustar conforme regras)
-        $stmtPagamento = $pdo->prepare("INSERT INTO Payments (idUser, idOrder, status, datePayment, total) VALUES (?, ?, 'Pago', NOW(), ?)");
-        $stmtPagamento->execute([$usuario_id, $orderId, $total]);
-
-        // Atualiza saldo do usuário (debita o valor total)
+        // Atualiza saldo do usuário (debita o valor total de todos os produtos)
         $novoSaldo = $conta['balance'] - $total;
         $stmtUpdateSaldo = $pdo->prepare("UPDATE BankAccount SET balance = ? WHERE idAccount = ?");
-        $stmtUpdateSaldo->execute([$novoSaldo, $conta['idAccount']]);
+        $result = $stmtUpdateSaldo->execute([$novoSaldo, $conta['idAccount']]);
+        if (!$result) {
+            throw new Exception("Erro ao atualizar saldo da conta: " . implode(", ", $stmtUpdateSaldo->errorInfo()));
+        }
 
         // Limpa carrinho do usuário
         $stmtLimpar = $pdo->prepare("DELETE FROM carrinho WHERE usuario_id = ?");
-        $stmtLimpar->execute([$usuario_id]);
+        $result = $stmtLimpar->execute([$usuario_id]);
+        if (!$result) {
+            throw new Exception("Erro ao limpar carrinho: " . implode(", ", $stmtLimpar->errorInfo()));
+        }
 
         $pdo->commit();
 
+        $totalPedidos = count($pedidosCriados);
         $sucesso = "Compra realizada com sucesso!";
         $itens = [];
         $total = 0;
-        $idFornecedor = null;
 
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -122,6 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
         .alert-error { color: red; }
         .alert-success { color: green; }
         button { padding: 10px 20px; font-size: 16px; }
+        .fornecedor-info { background-color: #f9f9f9; padding: 5px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -137,10 +181,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
 
     <?php if (!empty($itens)): ?>
         <h2>Itens no Carrinho</h2>
+        <p><em>Cada produto será processado como um pedido individual para seu respectivo fornecedor.</em></p>
+        
         <table>
             <thead>
                 <tr>
                     <th>Produto</th>
+                    <th>Fornecedor</th>
                     <th>Quantidade</th>
                     <th>Preço Unitário</th>
                     <th>Subtotal</th>
@@ -150,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
                 <?php foreach ($itens as $item): ?>
                 <tr>
                     <td><?= htmlspecialchars($item['description']) ?></td>
+                    <td class="fornecedor-info"><?= htmlspecialchars($item['supplier']) ?></td>
                     <td><?= (int)$item['quantidade'] ?></td>
                     <td>R$ <?= number_format($item['price'], 2, ',', '.') ?></td>
                     <td>R$ <?= number_format($item['price'] * $item['quantidade'], 2, ',', '.') ?></td>
@@ -158,8 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
             </tbody>
         </table>
 
-        <p><strong>Total: </strong> R$ <?= number_format($total, 2, ',', '.') ?></p>
-        <p><strong>Fornecedor do pedido:</strong> <?= htmlspecialchars($idFornecedor) ?></p>
+        <p><strong>Total Geral: </strong> R$ <?= number_format($total, 2, ',', '.') ?></p>
 
         <form action="" method="post">
             <button type="submit" name="comprar">Comprar Agora</button>

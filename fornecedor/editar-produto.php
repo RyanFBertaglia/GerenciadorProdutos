@@ -15,7 +15,7 @@ $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$produto) {
     $_SESSION['erro'] = "Produto não encontrado ou você não tem permissão para editá-lo";
-    header('Location: /fornecedor/produto');
+    header('Location: /fornecedor/produtos');
     exit;
 }
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($sucesso) {
             $_SESSION['sucesso'] = "Produto atualizado com sucesso! O status voltou para 'pendente' para revisão.";
-            header('Location: /fornecedor/produtos.php');
+            header('Location: /fornecedor/produtos');
             exit;
         } else {
             throw new Exception("Erro ao atualizar o produto");
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <br><br>
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h2>Editar Produto</h2>
-                    <a href="/fornecedor/produtos.php" class="btn btn-secondary">
+                    <a href="/fornecedor/produtos" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -236,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save"></i> Salvar Alterações
                                 </button>
-                                <a href="/fornecedor/produtos.php" class="btn btn-secondary">Cancelar</a>
+                                <a href="/fornecedor/produtos" class="btn btn-secondary">Cancelar</a>
                             </div>
                         </form>
                     </div>

@@ -1,15 +1,19 @@
 USE dados;
 CREATE TABLE Orders (
-    id INT PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT,
     idUser INT,
     dataPedido DATE,
     status VARCHAR(30),
     idFornecedor INT,
+    dataConfirmacao DATE,
+    dataDevolucao DATE,
+    motivoDevolucao TEXT,
+    motivoRecusa TEXT,
     total DOUBLE
 );
 
 CREATE TABLE OrderItems (
-    id INT PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT,
     idOrder VARCHAR(10), 
     idProduct INT,
     quantity DOUBLE,
@@ -17,7 +21,7 @@ CREATE TABLE OrderItems (
 );
 
 CREATE TABLE Payments (
-    id INT PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT,
     idUser INT,
     idOrder INT,
     status VARCHAR(50),
