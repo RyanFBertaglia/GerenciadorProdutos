@@ -1,22 +1,5 @@
-/* Reset de estilos conflitantes */
-body {
-    background: linear-gradient(to bottom right, #0e1d3a, #163863);
-    color: #fff;
-    font-family: 'Montserrat', sans-serif;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-}
 
-/* Container principal */
-.container-fluid {
-    margin: 0 auto;
-    grid-area: main;
-    padding: 20px;
-    min-height: 100vh;
-}
 
-/* Cards de estatísticas */
 .card {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

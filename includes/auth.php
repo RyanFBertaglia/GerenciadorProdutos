@@ -26,7 +26,6 @@ function login($email, $senha, $pdo) {
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($usuario && password_verify($senha, $usuario['senha'])) {
-        // Atualiza dados na sessão (remove a senha)
         unset($usuario['senha']);
         $_SESSION['usuario'] = $usuario;
         
@@ -36,9 +35,6 @@ function login($email, $senha, $pdo) {
     return false;
 }
 
-/**
- * Realiza o logout do usuário
- */
 function logout() {
     $_SESSION = array();
     
@@ -53,9 +49,6 @@ function logout() {
     session_destroy();
 }
 
-/**
- * Gera token para recuperação de senha
- */
 function gerarTokenRecuperacao($email, $pdo) {
     $token = bin2hex(random_bytes(32));
     $expiracao = date('Y-m-d H:i:s', strtotime(TOKEN_EXPIRACAO));
@@ -69,9 +62,6 @@ function gerarTokenRecuperacao($email, $pdo) {
     return $token;
 }
 
-/**
- * Valida token de recuperação de senha
- */
 function validarTokenRecuperacao($token, $pdo) {
     $stmt = $pdo->prepare("SELECT id FROM usuarios 
         WHERE token_recuperacao = ? 
@@ -81,9 +71,6 @@ function validarTokenRecuperacao($token, $pdo) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-/**
- * Atualiza senha do usuário
- */
 function atualizarSenha($usuarioId, $novaSenha, $pdo) {
     if (strlen($novaSenha) < MIN_PASSWORD_LENGTH) {
         throw new Exception("A senha deve ter pelo menos " . MIN_PASSWORD_LENGTH . " caracteres");
@@ -98,9 +85,6 @@ function atualizarSenha($usuarioId, $novaSenha, $pdo) {
     return $stmt->execute([$senhaHash, $usuarioId]);
 }
 
-/**
- * Obtém dados do usuário logado
- */
 function getUserData($campo = null) {
     if (!isLoggedIn()) return null;
     
@@ -111,9 +95,6 @@ function getUserData($campo = null) {
     return $_SESSION['usuario'];
 }
 
-/**
- * Redireciona usuários já logados
- */
 function redirectIfLoggedIn($url = '/') {
     if (isLoggedIn()) {
         header("Location: $url");
@@ -136,13 +117,9 @@ function isAdmin() {
 }
 
 function isFornecedor() {
-    // Verifica se está logado e se a sessão tem o tipo 'fornecedor'
     return isLoggedIn() && ($_SESSION['usuario']['tipo'] ?? null) === 'fornecedor';
 }
 
-/**
- * Protege uma página para acesso exclusivo de fornecedores
- */
 function protectFornecedorPage() {
     if (!isFornecedor()) { 
         $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'] ?? '/';
@@ -159,10 +136,7 @@ function loginFornecedor($email, $senha, $pdo) {
     $fornecedor = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($fornecedor && password_verify($senha, $fornecedor['senha'])) {
-        // Remove a senha antes de salvar na sessão
         unset($fornecedor['senha']);
-        
-        // Adiciona o tipo para identificar o tipo de usuário
         $fornecedor['tipo'] = 'fornecedor';
         
         $_SESSION['usuario'] = $fornecedor;

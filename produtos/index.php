@@ -17,6 +17,11 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="./static/style/tipografia.css">
   <link rel="stylesheet" href="./static/style/main.css">
   <link rel="stylesheet" href="./static/style/loja.css">
+  <style>
+        body {
+            font-family: arial; 
+        }
+  </style>
 
 </head>
 <body>

@@ -7,22 +7,18 @@ protectFornecedorPage();
 $fornecedorId = $_SESSION['usuario']['id'];
 $mensagem = '';
 
-// Processar remoção de produto
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $produtoId = $_GET['id'];
     
-    // Verificar se o produto pertence ao fornecedor
     $stmt = $pdo->prepare("SELECT image FROM produtos WHERE idProduct = ? AND supplier = ?");
     $stmt->execute([$produtoId, $fornecedorId]);
     $produto = $stmt->fetch();
     
     if ($produto) {
-        // Remover imagem se existir
-        if (!empty($produto['image']) && file_exists("./assets/uploads/" . $produto['image'])) {
-            unlink("./assets/uploads/" . $produto['image']);
+        if (!empty($produto['image']) && file_exists("../assets/uploads/" . $produto['image'])) {
+            unlink("../assets/uploads/" . $produto['image']);
         }
         
-        // Remover do banco
         $stmt = $pdo->prepare("DELETE FROM produtos WHERE idProduct = ?");
         $stmt->execute([$produtoId]);
         
@@ -30,7 +26,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
-// Buscar produtos do fornecedor
 $stmt = $pdo->prepare("
     SELECT p.*, 
            u.nome as aprovador_nome
@@ -82,9 +77,9 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./static/style/admin/dash-fornecedor.css">
-    <link rel="stylesheet" href="./static/style/main.css">
-    <link rel="stylesheet" href="./static/style/tipografia.css">
+    <link rel="stylesheet" href="../static/style/admin/dash-fornecedor.css">
+    <link rel="stylesheet" href="../static/style/main.css">
+    <link rel="stylesheet" href="../static/style/tipografia.css">
     </head>
 <body>
     <?php include './static/elements/sidebar-fornecedor.php'; ?>
@@ -105,7 +100,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
-                        <thead class="table-dark">
+                        <thead class="table-dark" style="background-color: #4a90e2;">
                             <tr>
                                 <th>Imagem</th>
                                 <th>Nome</th>
@@ -121,7 +116,7 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <tr>
                                 <td>
                                     <?php if (!empty($produto['image'])): ?>
-                                        <img src="./static/uploads/<?= htmlspecialchars($produto['image']) ?>" 
+                                        <img src="../static/uploads/<?= htmlspecialchars($produto['image']) ?>" 
                                              alt="<?= htmlspecialchars($produto['nome']) ?>" 
                                              class="product-image">
                                     <?php else: ?>

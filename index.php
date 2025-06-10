@@ -60,16 +60,12 @@ switch ($uri) {
     case '/fornecedor/devolucoes':
         protectFornecedorPage();
         require './fornecedor/devolucoes.php';
-        break; 
-    /*case '/fornecedor/remover-produto':
-        protectFornecedorPage();
-        require './fornecedor/remover-produto.php';
         break;
 
-    case '/fornecedor/editar-produto':
+    case '/fornecedor/clientes':
         protectFornecedorPage();
-        require './fornecedor/editar-produto.php';
-        break;*/
+        require './static/elements/pedidos.php';
+        break;
 
     // === ROTAS GERAIS ===
     case '/produto':
@@ -166,6 +162,11 @@ switch ($uri) {
     case '/admin/rejeitar-produto':
         protectAdminPage();
         require './admin/rejeitar-produto.php';
+        break;
+
+    case '/admin/fornecedores':
+        protectAdminPage();
+        require './admin/fornecedores.php';
         break;
 
         

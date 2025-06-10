@@ -157,18 +157,158 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
 <head>
     <meta charset="UTF-8" />
     <title>Checkout</title>
+    <link rel="stylesheet" href="../static/style/admin/main.css">
     <style>
-        body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; padding: 0 15px; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .alert-error { color: red; }
-        .alert-success { color: green; }
-        button { padding: 10px 20px; font-size: 16px; }
-        .fornecedor-info { background-color: #f9f9f9; padding: 5px; font-size: 12px; }
-    </style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: arial;
+        grid-template-areas: "aside main";
+        display: grid;
+    }
+    aside {
+        grid-area: aside;
+    }
+    main {
+        grid-area: main;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 25px;
+    }
+
+    h2 {
+        color: #444;
+        margin: 20px 0 15px;
+    }
+
+    .alert-error {
+        background-color: #ffebee;
+        color: #d32f2f;
+        padding: 12px 15px;
+        border-radius: 4px;
+        border-left: 4px solid #f44336;
+        margin: 15px 0;
+    }
+
+    .alert-success {
+        background-color: #e8f5e9;
+        color: #388e3c;
+        padding: 12px 15px;
+        border-radius: 4px;
+        border-left: 4px solid #4caf50;
+        margin: 15px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: Arial;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    table thead tr {
+        background-color: #4a90e2;
+        color: #ffffff;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    table th,
+    table td {
+        padding: 12px 15px;
+    }
+
+    table tbody tr {
+        border: none;
+    }
+
+    table tbody tr:nth-of-type(even) {
+        background-color: #f9f9f9;
+    }
+
+    table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .fornecedor-info {
+        font-weight: bold;
+        color: #2a75bb;
+    }
+
+    /* Botão */
+    button[type="submit"] {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        font-size: 0.9em;
+        margin: 15px 0;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #3a7bc8;
+        transform: translateY(-1px);
+    }
+
+    p strong {
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    p a {
+        color: #4a90e2;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        display: inline-block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    p a:hover {
+        color: #3a7bc8;
+        text-decoration: underline;
+    }
+
+    p em {
+        color: #666;
+        font-style: italic;
+    }
+
+    p:not([class]):not(strong) {
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            margin-left: 0;
+            padding: 15px;
+        }
+
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
 </head>
 <body>
+    <?php include './static/elements/sidebar-main.php'; ?>
+    
+    <main>
+    <br><br>
     <h1>Finalizar Compra</h1>
 
     <?php if ($erro): ?>
@@ -181,13 +321,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
 
     <?php if (!empty($itens)): ?>
         <h2>Itens no Carrinho</h2>
-        <p><em>Cada produto será processado como um pedido individual para seu respectivo fornecedor.</em></p>
         
         <table>
             <thead>
                 <tr>
                     <th>Produto</th>
-                    <th>Fornecedor</th>
+                    <th>ID Fornecedor</th>
                     <th>Quantidade</th>
                     <th>Preço Unitário</th>
                     <th>Subtotal</th>
@@ -216,5 +355,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
     <?php endif; ?>
 
     <p><a href="/user/carrinho">Voltar ao carrinho</a></p>
+    </main>
 </body>
 </html>

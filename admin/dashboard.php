@@ -12,6 +12,9 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM produtos WHERE status = 'pendente'");
 $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+$_SESSION['produtosPendentes'] = $produtosPendentes;
+
 ?>
 
 <!DOCTYPE html>
@@ -22,59 +25,34 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     <title>Painel Administrativo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="./static/style/admin/dashboard.css">
+    <link rel="stylesheet" href="../static/style/admin/main.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 0px 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "aside main";
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            grid-area: aside;
+        }
+        .container-fluid {
+            grid-area: main;
+        }
+        main {
+            grid-area: content;
+            overflow-y: auto;
+        }        
+    </style>
 </head>
 <body>
+    <?php include './static/elements/sidebar-admin.php'; ?>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 d-md-block sidebar bg-dark admin-sidebar" id="barraLateral">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/admin/dashboard">
-                                <i class="bi bi-speedometer2 me-2"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/pendentes">
-                                <i class="bi bi-card-checklist me-2"></i>
-                                Produtos Pendentes
-                                <?php if ($produtosPendentes > 0): ?>
-                                    <span class="badge bg-danger float-end"><?= $produtosPendentes ?></span>
-                                <?php endif; ?>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/fornecedores">
-                                <i class="bi bi-people me-2"></i>
-                                Fornecedores
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/produto">
-                                <i class="bi bi-box-seam me-2"></i>
-                                Produtos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/usuarios.php">
-                                <i class="bi bi-person-lines-fill me-2"></i>
-                                Usuários
-                            </a>
-                        </li>
-                        <li class="nav-item mt-3">
-                            <a class="nav-link" href="/logout">
-                                <i class="bi bi-box-arrow-right me-2"></i>
-                                Sair
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dashboard</h1>
@@ -87,7 +65,6 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                     </div>
                 </div>
 
-                <!-- Cards de Estatísticas -->
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card text-white bg-primary">
@@ -123,7 +100,6 @@ $produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
                     </div>
                 </div>
 
-                <!-- Seção de Atividades Recentes -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">

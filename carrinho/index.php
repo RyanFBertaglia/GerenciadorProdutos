@@ -163,7 +163,7 @@ try {
                 <tr>
                     <td>
                         <div class="product-cell">
-                            <img src="./static/uploads/<?= htmlspecialchars($item['image']) ?>" 
+                            <img src="../static/uploads/<?= htmlspecialchars($item['image']) ?>" 
                                  alt="<?= htmlspecialchars($item['description']) ?>" 
                                  class="product-img">
                             <div>

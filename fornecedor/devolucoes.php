@@ -11,7 +11,7 @@ if (!isLoggedIn() || $_SESSION['usuario']['tipo'] !== 'fornecedor') {
     exit;
 }
 
-$fornecedor_id = 2;//$_SESSION['usuario']['id']; // Removido o ID fixo
+$fornecedor_id = $_SESSION['usuario']['id']; // Removido o ID fixo
 $sucesso = $_SESSION['sucesso'] ?? null;
 $erro = $_SESSION['erro'] ?? null;
 unset($_SESSION['sucesso'], $_SESSION['erro']);
@@ -58,10 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$result) {
                 throw new Exception("Erro ao atualizar status do pedido.");
             }
+            /*
+            Reembolso: 
+                - Busca conta Fornecedor
+                - Busca conta Cliente
+                - Verifica saldo do fornecedor
+                - Realiza a transferência
+            */
         
-            // Se aprovado, processa o reembolso
             if ($acao === 'aprovar') {
-                // 1. Verifica e bloqueia conta do fornecedor para operação
                 $stmtContaFornecedor = $pdo->prepare("SELECT * FROM BankAccount 
                                                     WHERE idFornecedor = ? AND tipo = 'fornecedor' AND status = 'A'
                                                     LIMIT 1 FOR UPDATE");
@@ -72,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Sua conta bancária não foi encontrada ou está inativa.");
                 }
         
-                // 2. Verifica e bloqueia conta do cliente para operação
                 $stmtContaCliente = $pdo->prepare("SELECT * FROM BankAccount 
                                                  WHERE idUser = ? AND tipo = 'usuario' AND status = 'A'
                                                  LIMIT 1 FOR UPDATE");
@@ -83,12 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Conta bancária do cliente não encontrada ou inativa.");
                 }
         
-                // 3. Verifica saldo do fornecedor
                 if ($contaFornecedor['balance'] < $pedido['total']) {
                     throw new Exception("Saldo insuficiente em sua conta para realizar o reembolso.");
                 }
         
-                // 4. Realiza a transferência
                 $stmtDebito = $pdo->prepare("UPDATE BankAccount 
                                             SET balance = balance - ? 
                                             WHERE idAccount = ?");
@@ -117,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Busca pedidos com devolução pendente para este fornecedor
+// Devolução pendente para o fornecedor
 $stmt = $pdo->prepare("
     SELECT o.*, u.nome AS nome_cliente 
     FROM Orders o
@@ -131,7 +133,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$fornecedor_id]);
 $pedidos_pendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Busca histórico de devoluções processadas
+// Devoluções finalizadas
 $stmt = $pdo->prepare("
     SELECT o.*, u.nome AS nome_cliente
     FROM Orders o
@@ -148,8 +150,6 @@ $stmt->execute([$fornecedor_id]);
 $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!-- O restante do HTML permanece igual -->
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -158,21 +158,32 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "sidebar main";
+            min-height: 100vh;
         }
+        aside {
+            grid-area: aside;
+        }
+        
+        
         .container {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+        
         .section {
-            flex: 1;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 15px;
             background-color: #f9f9f9;
         }
+        
         .pedido {
             border: 1px solid #ccc;
             margin-bottom: 20px;
@@ -180,12 +191,14 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 8px;
             background-color: white;
         }
+        
         .pedido-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
+        
         .status {
             padding: 5px 10px;
             border-radius: 20px;
@@ -193,15 +206,18 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-size: 12px;
             text-transform: uppercase;
         }
+        
         .status.pendente { background-color: #fff3cd; color: #856404; }
         .status.devolvido { background-color: #d4edda; color: #155724; }
         .status.confirmado { background-color: #f8d7da; color: #721c24; }
+        
         .itens-lista {
             background-color: #f8f9fa;
             padding: 10px;
             border-radius: 5px;
             margin: 10px 0;
         }
+        
         .btn-aprovar {
             background-color: #28a745;
             color: white;
@@ -211,6 +227,7 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             cursor: pointer;
             font-size: 14px;
         }
+        
         .btn-rejeitar {
             background-color: #dc3545;
             color: white;
@@ -221,6 +238,7 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-size: 14px;
             margin-left: 10px;
         }
+        
         textarea {
             width: 100%;
             padding: 10px;
@@ -229,6 +247,7 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             resize: vertical;
             margin: 10px 0;
         }
+        
         .alert-success {
             color: #155724;
             background-color: #d4edda;
@@ -237,6 +256,7 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 5px;
             margin-bottom: 15px;
         }
+        
         .alert-error {
             color: #721c24;
             background-color: #f8d7da;
@@ -245,163 +265,181 @@ $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 5px;
             margin-bottom: 15px;
         }
-        h2 {
+        
+        h1, h2 {
             color: #333;
+        }
+        
+        h2 {
             border-bottom: 2px solid #eee;
             padding-bottom: 10px;
             margin-top: 0;
         }
+        
         .info-cliente {
             background-color: #e7f5fe;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
         }
+        
         .motivo-box {
             background-color: #fff3cd;
             padding: 10px;
             border-radius: 5px;
             margin: 10px 0;
         }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
+    <link rel="stylesheet" href="../static/style/admin/main.css">
 </head>
 <body>
-    <h1>Gerenciar Solicitações de Devolução</h1>
+    <?php include './static/elements/sidebar-fornecedor.php'; ?>
 
-    <?php if ($sucesso): ?>
-        <div class="alert-success"><?= htmlspecialchars($sucesso) ?></div>
-    <?php endif; ?>
 
-    <?php if ($erro): ?>
-        <div class="alert-error"><?= htmlspecialchars($erro) ?></div>
-    <?php endif; ?>
-
-    <div class="container">
-        <div class="section">
-            <h2>Devoluções Pendentes</h2>
-            
-            <?php if (empty($pedidos_pendentes)): ?>
-                <p>Não há devoluções pendentes no momento.</p>
-            <?php else: ?>
-                <?php foreach ($pedidos_pendentes as $pedido): ?>
-                    <div class="pedido">
-                        <div class="info-cliente">
-                            <p><strong>Cliente:</strong> <?= htmlspecialchars($pedido['nome_cliente']) ?></p>
-                            <p><strong>Pedido #<?= htmlspecialchars($pedido['id']) ?></strong></p>
-                            <p><strong>Data da solicitação:</strong> <?= date('d/m/Y H:i', strtotime($pedido['dataDevolucao'])) ?></p>
-                            <span class="status pendente">Pendente</span>
-                        </div>
-                        
-                        <div class="motivo-box">
-                            <p><strong>Motivo da devolução:</strong></p>
-                            <p><?= htmlspecialchars($pedido['motivoDevolucao']) ?></p>
-                        </div>
-                        
-                        <div class="itens-lista">
-                            <strong>Itens do Pedido:</strong>
-                            <ul>
-                                <?php
-                                $stmtItens = $pdo->prepare("SELECT oi.quantity, oi.value, p.description 
-                                                           FROM OrderItems oi 
-                                                           JOIN produtos p ON oi.idProduct = p.idProduct
-                                                           WHERE oi.idOrder = ? AND p.supplier = ?");
-                                $stmtItens->execute([$pedido['id'], $fornecedor_id]);
-                                $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
-                                foreach ($itens as $item):
-                                ?>
-                                    <li>
-                                        <?= htmlspecialchars($item['description']) ?> - 
-                                        Quantidade: <?= $item['quantity'] ?> - 
-                                        Valor unitário: R$ <?= number_format($item['value'], 2, ',', '.') ?> - 
-                                        <strong>Subtotal: R$ <?= number_format($item['value'] * $item['quantity'], 2, ',', '.') ?></strong>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                        
-                        <p><strong>Total do pedido:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
-                        
-                        <form method="post">
-                            <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
-                            
-                            <label for="motivoRecusa"><strong>Motivo da Resposta:</strong> (Obrigatório para rejeição)</label>
-                            <textarea name="motivoRecusa" rows="3" placeholder="Digite o motivo da aprovação/rejeição..."></textarea>
-                            
-                            <button type="submit" name="aprovar_devolucao" class="btn-aprovar" onclick="return confirm('Tem certeza que deseja APROVAR esta devolução? O reembolso será processado.')">
-                                Aprovar Devolução
-                            </button>
-                            
-                            <button type="submit" name="rejeitar_devolucao" class="btn-rejeitar" onclick="return confirm('Tem certeza que deseja REJEITAR esta devolução?')">
-                                Rejeitar Devolução
-                            </button>
-                        </form>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+    <main>
+        <br><br>
+        <h1>Gerenciar Solicitações de Devolução</h1>
         
-        <div class="section">
-            <h2>Histórico de Devoluções</h2>
-            
-            <?php if (empty($historico_devolucoes)): ?>
-                <p>Nenhuma devolução processada até o momento.</p>
-            <?php else: ?>
-                <?php foreach ($historico_devolucoes as $devolucao): ?>
-                    <div class="pedido">
-                        <div class="info-cliente">
-                            <p><strong>Cliente:</strong> <?= htmlspecialchars($devolucao['nome_cliente']) ?></p>
-                            <p><strong>Pedido #<?= htmlspecialchars($devolucao['id']) ?></strong></p>
-                            <p><strong>Status:</strong> 
-                                <span class="status <?= strtolower($devolucao['status']) ?>">
-                                    <?= htmlspecialchars($devolucao['status']) ?>
-                                </span>
-                            </p>
-                            <p><strong>Data da resposta:</strong> <?= date('d/m/Y H:i', strtotime($devolucao['dataConfirmacao'])) ?></p>
-                        </div>
-                        
-                        <div class="motivo-box">
-                            <p><strong>Motivo da devolução:</strong></p>
-                            <p><?= htmlspecialchars($devolucao['motivoDevolucao']) ?></p>
-                        </div>
-                        
-                        <?php if (!empty($devolucao['motivoRecusa'])): ?>
-                            <div class="motivo-box" style="background-color: #f8d7da;">
-                                <p><strong>Motivo da rejeição:</strong></p>
-                                <p><?= htmlspecialchars($devolucao['motivoRecusa']) ?></p>
+        <?php if ($sucesso): ?>
+            <div class="alert-success"><?= htmlspecialchars($sucesso) ?></div>
+        <?php endif; ?>
+
+        <?php if ($erro): ?>
+            <div class="alert-error"><?= htmlspecialchars($erro) ?></div>
+        <?php endif; ?>
+        <div class="container">
+            <div class="section">
+                <h2>Devoluções Pendentes</h2>
+                
+                <?php if (empty($pedidos_pendentes)): ?>
+                    <p>Não há devoluções pendentes no momento.</p>
+                <?php else: ?>
+                    <?php foreach ($pedidos_pendentes as $pedido): ?>
+                        <div class="pedido">
+                            <div class="info-cliente">
+                                <p><strong>Cliente:</strong> <?= htmlspecialchars($pedido['nome_cliente']) ?></p>
+                                <p><strong>Pedido #<?= htmlspecialchars($pedido['id']) ?></strong></p>
+                                <p><strong>Data da solicitação:</strong> <?= date('d/m/Y H:i', strtotime($pedido['dataDevolucao'])) ?></p>
+                                <span class="status pendente">Pendente</span>
                             </div>
-                        <?php endif; ?>
-                        
-                        <div class="itens-lista">
-                            <strong>Itens do Pedido:</strong>
-                            <ul>
-                                <?php
-                                $stmtItens = $pdo->prepare("SELECT oi.quantity, oi.value, p.description 
-                                                           FROM OrderItems oi 
-                                                           JOIN produtos p ON oi.idProduct = p.idProduct
-                                                           WHERE oi.idOrder = ? AND p.supplier = ?");
-                                $stmtItens->execute([$devolucao['id'], $fornecedor_id]);
-                                $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
-                                foreach ($itens as $item):
-                                ?>
-                                    <li>
-                                        <?= htmlspecialchars($item['description']) ?> - 
-                                        Quantidade: <?= $item['quantity'] ?> - 
-                                        Valor unitário: R$ <?= number_format($item['value'], 2, ',', '.') ?> - 
-                                        <strong>Subtotal: R$ <?= number_format($item['value'] * $item['quantity'], 2, ',', '.') ?></strong>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
+                            
+                            <div class="motivo-box">
+                                <p><strong>Motivo da devolução:</strong></p>
+                                <p><?= htmlspecialchars($pedido['motivoDevolucao']) ?></p>
+                            </div>
+                            
+                            <div class="itens-lista">
+                                <strong>Itens do Pedido:</strong>
+                                <ul>
+                                    <?php
+                                    $stmtItens = $pdo->prepare("SELECT oi.quantity, oi.value, p.description 
+                                                               FROM OrderItems oi 
+                                                               JOIN produtos p ON oi.idProduct = p.idProduct
+                                                               WHERE oi.idOrder = ? AND p.supplier = ?");
+                                    $stmtItens->execute([$pedido['id'], $fornecedor_id]);
+                                    $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+                                    foreach ($itens as $item):
+                                    ?>
+                                        <li>
+                                            <?= htmlspecialchars($item['description']) ?> - 
+                                            Quantidade: <?= $item['quantity'] ?> - 
+                                            Valor unitário: R$ <?= number_format($item['value'], 2, ',', '.') ?> - 
+                                            <strong>Subtotal: R$ <?= number_format($item['value'] * $item['quantity'], 2, ',', '.') ?></strong>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                            
+                            <p><strong>Total do pedido:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
+                            
+                            <form method="post">
+                                <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                                
+                                <label for="motivoRecusa"><strong>Motivo da Resposta:</strong> (Obrigatório para rejeição)</label>
+                                <textarea name="motivoRecusa" rows="3" placeholder="Digite o motivo da aprovação/rejeição..."></textarea>
+                                
+                                <button type="submit" name="aprovar_devolucao" class="btn-aprovar" onclick="return confirm('Tem certeza que deseja APROVAR esta devolução? O reembolso será processado.')">
+                                    Aprovar Devolução
+                                </button>
+                                
+                                <button type="submit" name="rejeitar_devolucao" class="btn-rejeitar" onclick="return confirm('Tem certeza que deseja REJEITAR esta devolução?')">
+                                    Rejeitar Devolução
+                                </button>
+                            </form>
                         </div>
-                        
-                        <p><strong>Total do pedido:</strong> R$ <?= number_format($devolucao['total'], 2, ',', '.') ?></p>
-                        
-                        <?php if ($devolucao['status'] === 'Devolvido'): ?>
-                            <p><strong>Valor reembolsado:</strong> R$ <?= number_format($devolucao['total'], 2, ',', '.') ?></p>
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            
+            <div class="section">
+                <h2>Histórico de Devoluções</h2>
+                
+                <?php if (empty($historico_devolucoes)): ?>
+                    <p>Nenhuma devolução processada até o momento.</p>
+                <?php else: ?>
+                    <?php foreach ($historico_devolucoes as $devolucao): ?>
+                        <div class="pedido">
+                            <div class="info-cliente">
+                                <p><strong>Cliente:</strong> <?= htmlspecialchars($devolucao['nome_cliente']) ?></p>
+                                <p><strong>Pedido #<?= htmlspecialchars($devolucao['id']) ?></strong></p>
+                                <p><strong>Status:</strong> 
+                                    <span class="status <?= strtolower($devolucao['status']) ?>">
+                                        <?= htmlspecialchars($devolucao['status']) ?>
+                                    </span>
+                                </p>
+                                <p><strong>Data da resposta:</strong> <?= date('d/m/Y H:i', strtotime($devolucao['dataConfirmacao'])) ?></p>
+                            </div>
+                            
+                            <div class="motivo-box">
+                                <p><strong>Motivo da devolução:</strong></p>
+                                <p><?= htmlspecialchars($devolucao['motivoDevolucao']) ?></p>
+                            </div>
+                            
+                            <?php if (!empty($devolucao['motivoRecusa'])): ?>
+                                <div class="motivo-box" style="background-color: #f8d7da;">
+                                    <p><strong>Motivo da rejeição:</strong></p>
+                                    <p><?= htmlspecialchars($devolucao['motivoRecusa']) ?></p>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="itens-lista">
+                                <strong>Itens do Pedido:</strong>
+                                <ul>
+                                    <?php
+                                    $stmtItens = $pdo->prepare("SELECT oi.quantity, oi.value, p.description 
+                                                               FROM OrderItems oi 
+                                                               JOIN produtos p ON oi.idProduct = p.idProduct
+                                                               WHERE oi.idOrder = ? AND p.supplier = ?");
+                                    $stmtItens->execute([$devolucao['id'], $fornecedor_id]);
+                                    $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+                                    foreach ($itens as $item):
+                                    ?>
+                                        <li>
+                                            <?= htmlspecialchars($item['description']) ?> - 
+                                            Quantidade: <?= $item['quantity'] ?> - 
+                                            Valor unitário: R$ <?= number_format($item['value'], 2, ',', '.') ?> - 
+                                            <strong>Subtotal: R$ <?= number_format($item['value'] * $item['quantity'], 2, ',', '.') ?></strong>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                            
+                            <p><strong>Total do pedido:</strong> R$ <?= number_format($devolucao['total'], 2, ',', '.') ?></p>
+                            
+                            <?php if ($devolucao['status'] === 'Devolvido'): ?>
+                                <p><strong>Valor reembolsado:</strong> R$ <?= number_format($devolucao['total'], 2, ',', '.') ?></p>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
+    </main>
 </body>
 </html>

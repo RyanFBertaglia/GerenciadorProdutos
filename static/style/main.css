@@ -28,6 +28,8 @@ body {
 
 aside {
     grid-area: aside;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
 }
 
 body.collapsed {
@@ -38,9 +40,8 @@ body.collapsed aside {
     transform: translateX(-100%);
 }
 
-/* Espaço para o conteúdo principal */
 .main-content {
-    padding-left: 200px; /* Largura da sidebar */
+    padding-left: 200px;
     transition: padding-left 0.3s ease;
     min-height: 100vh;
 }
@@ -49,7 +50,6 @@ body.collapsed .main-content {
     padding-left: 0;
 }
 
-/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 874px) {
     .sidebar {
         transform: translateX(-100%);

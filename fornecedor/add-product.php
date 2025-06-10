@@ -58,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } catch (Exception $e) {
         $erro = $e->getMessage();
-        // Remove a imagem se houve erro após o upload
         if (!empty($imagemNome) && file_exists("./assets/uploads/" . $imagemNome)) {
             unlink("./static/uploads/" . $imagemNome);
         }
@@ -73,13 +72,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Cadastrar Produto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="./static/style/main.css">
+    <link rel="stylesheet" href="../static/style/admin/main.css">
 
     <style>
-        .container-fluid{
-            grid-area: main;
+        @media (min-width: 769px) {
+            main {
+                padding-left: 210px
+            }
         }
-
+      
     @media (max-width: 768px) {
     h2 {
         padding-left: 0px;
@@ -89,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <?php include './static/elements/sidebar-fornecedor.php'; ?>
-    <div class="container-fluid">
+    <main>
         <br><br><br>
         <h2>Cadastrar Novo Produto</h2>
         
@@ -126,6 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary">Cadastrar</button>
             <a href="/fornecedor/produtos" class="btn btn-secondary">Cancelar</a>
         </form>
-    </div>
+    </main>
 </body>
 </html>

@@ -1,7 +1,7 @@
 
 body {
-    min-height: 100vh; /* Alterado para vh para garantir altura total da viewport */
-    margin: 0; /* Remover margens padrão */
+    min-height: 100vh;
+    margin: 0;
     display: grid;
     font-family: 'Montserrat', sans-serif;
     background: linear-gradient(to bottom right, #0e1d3a, #163863);

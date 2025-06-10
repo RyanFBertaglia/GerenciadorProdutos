@@ -1,12 +1,10 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once './includes/db.php';
 require_once './includes/auth.php';
 
-if (!isLoggedIn()) {
-    header('Location: /login');
-    exit;
-}
 
 $fornecedor_id = $_SESSION['usuario']['id'];
 $erro = $sucesso = '';
@@ -65,51 +63,68 @@ $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <title>Pedidos do Fornecedor</title>
+    <link rel="stylesheet" href="../static/style/admin/main.css">
+    <link rel="stylesheet" href="../static/style/pedidos.css">
+    <style>
+        body {
+        margin: 0;
+        padding: 0;
+        font-family: arial;
+        grid-template-areas: "aside main";
+        display: grid;
+    }
+    </style>
 </head>
+
 <body>
+    <?php include './static/elements/sidebar-fornecedor.php'; ?>
+    <main>
     <h1>Pedidos Recebidos</h1>
 
-    <?php if ($erro): ?>
-        <p style="color: red;"><?= htmlspecialchars($erro) ?></p>
-    <?php endif; ?>
 
-    <?php if ($sucesso): ?>
-        <p style="color: green;"><?= htmlspecialchars($sucesso) ?></p>
-    <?php endif; ?>
+<?php if ($erro): ?>
+    <p style="color: red;"><?= htmlspecialchars($erro) ?></p>
+<?php endif; ?>
 
-    <?php if (empty($pedidos)): ?>
-        <p>Nenhum pedido encontrado.</p>
-    <?php else: ?>
-        <?php foreach ($pedidos as $pedido): ?>
-            <div style="border:1px solid #ccc; margin-bottom:10px; padding:10px;">
-                <p><strong>ID do Pedido:</strong> <?= htmlspecialchars($pedido['id']) ?></p>
-                <p><strong>Data:</strong> <?= htmlspecialchars($pedido['dataPedido']) ?></p>
-                <p><strong>Status:</strong> <?= htmlspecialchars($pedido['status']) ?></p>
-                <p><strong>Total:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
-                <p><strong>Itens:</strong></p>
-                <ul>
-                    <?php
-                    $stmtItens = $pdo->prepare("SELECT oi.quantity, oi.value, p.description FROM OrderItems oi JOIN produtos p ON oi.idProduct = p.idProduct WHERE oi.idOrder = ?");
-                    $stmtItens->execute([$pedido['id']]);
-                    $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
-                    foreach ($itens as $item):
-                    ?>
-                        <li><?= htmlspecialchars($item['description']) ?> - Quantidade: <?= $item['quantity'] ?> - Valor unitário: R$ <?= number_format($item['value'], 2, ',', '.') ?></li>
-                    <?php endforeach; ?>
-                </ul>
+<?php if ($sucesso): ?>
+    <p style="color: green;"><?= htmlspecialchars($sucesso) ?></p>
+<?php endif; ?>
 
-                <?php if ($pedido['status'] !== 'Entregue'): ?>
-                    <form method="post" style="margin-top:10px;">
-                        <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
-                        <button type="submit" name="entregar">Marcar como Entregue</button>
-                    </form>
-                <?php else: ?>
-                    <p style="color: green; font-weight: bold;">Pedido entregue</p>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+<?php if (empty($pedidos)): ?>
+    <p>Nenhum pedido encontrado.</p>
+<?php else: ?>
+    <?php foreach ($pedidos as $pedido): ?>
+        <div style="border:1px solid #ccc; margin-bottom:10px; padding:10px;">
+            <p><strong>ID do Pedido:</strong> <?= htmlspecialchars($pedido['id']) ?></p>
+            <p><strong>Data:</strong> <?= htmlspecialchars($pedido['dataPedido']) ?></p>
+            <p><strong>Status:</strong> <?= htmlspecialchars($pedido['status']) ?></p>
+            <p><strong>Total:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
+            <p><strong>Itens:</strong></p>
+            <ul>
+                <?php
+                $stmtItens = $pdo->prepare("SELECT oi.quantity, oi.value, p.description FROM OrderItems oi JOIN produtos p ON oi.idProduct = p.idProduct WHERE oi.idOrder = ?");
+                $stmtItens->execute([$pedido['id']]);
+                $itens = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($itens as $item):
+                ?>
+                    <li><?= htmlspecialchars($item['description']) ?> - Quantidade: <?= $item['quantity'] ?> - Valor unitário: R$ <?= number_format($item['value'], 2, ',', '.') ?></li>
+                <?php endforeach; ?>
+            </ul>
 
-    <p><a href="/fornecedor/dashboard">Voltar ao painel do fornecedor</a></p>
+            <?php if ($pedido['status'] !== 'Entregue'): ?>
+                <form method="post" style="margin-top:10px;">
+                    <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
+                    <button type="submit" name="entregar">Marcar como Entregue</button>
+                </form>
+            <?php else: ?>
+                <p style="color: green; font-weight: bold;">Pedido entregue</p>
+            <?php endif; ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<p><a href="/fornecedor/dashboard">Voltar ao painel do fornecedor</a></p>
+    </main>
+    
 </body>
 </html>

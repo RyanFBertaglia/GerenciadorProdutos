@@ -1,7 +1,7 @@
 <?php
 if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
     logout();
-    header('Location: /fornecedor/login'); // Redireciona para a rota do router
+    header('Location: /admin/login');
 }
 ?>
 
@@ -13,27 +13,39 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
     <i class="fas fa-bars"></i>
 </button>
 
-<aside>
-<br><br><br>
-    <div class="nav-item" onclick="window.location.href='/fornecedor/dashboard'">
+<aside class="admin-sidebar">
+    <br><br><br>
+    <div class="nav-item" onclick="window.location.href='/admin/dashboard'">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </div>
-    <div class="nav-item" onclick="window.location.href='/fornecedor/cadastrar-produto'">
-        <i class="bi bi-plus-circle"></i>
-        <span>Cadastrar Produto</span>
+    
+    <div class="nav-item" onclick="window.location.href='/admin/pendentes'">
+        <i class="bi bi-card-checklist"></i>
+        <span>Produtos Pendentes</span>
+        <?php if ($produtosPendentes > 0): ?>
+            <span class="badge"><?= $produtosPendentes ?></span>
+        <?php endif; ?>
     </div>
-    <div class="nav-item" onclick="window.location.href='/fornecedor/produtos'">
+    
+    <div class="nav-item" onclick="window.location.href='/admin/fornecedores'">
+        <i class="bi bi-people"></i>
+        <span>Fornecedores</span>
+    </div>
+    
+    <div class="nav-item" onclick="window.location.href='/produto'">
         <i class="bi bi-box-seam"></i>
-        <span>Meus Produtos</span>
+        <span>Produtos</span>
     </div>
-    <div class="nav-item" onclick="window.location.href='/fornecedor/clientes'">
-        <i class="bi bi-cart-check"></i>
-        <span>Pedidos</span>
+    
+    <div class="nav-item" onclick="window.location.href='/admin/usuarios.php'">
+        <i class="bi bi-person-lines-fill"></i>
+        <span>Usuários</span>
     </div>
-    <div class="nav-item" onclick="window.location.href='/logout'">
+    
+    <div class="nav-item logout-item" onclick="window.location.href='/logout'">
         <i class="bi bi-box-arrow-right"></i>
-        <span>Logout</span>
+        <span>Sair</span>
     </div>
 </aside>
 
@@ -70,7 +82,5 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
                 aside.classList.remove("show");
             }
         });
-
- 
     });
 </script>
