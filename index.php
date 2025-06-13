@@ -1,43 +1,61 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mancha Gestões</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="./static/style/paginaInicial.css">
-  <link rel="stylesheet" href="./static/style/menu.css">
-  <link rel="stylesheet" href="./static/style/tipografia.css">
-  <link rel="stylesheet" href="./static/style/main.css">
-</head>
-<body>
+<?php
+require_once 'config.php';
+require_once 'includes/auth.php';
 
-  <?php include './static/elements/sidebar-main.php'; ?>
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = rtrim($requestUri, '/');
+if ($uri === '') {
+    $uri = '/';
+}
 
 
-  <!-- Conteúdo principal -->
-  <main>
-    <br>
-    <br>
-    <div class="container">
-    <h1>Comece a comprar e tenha</h1>
-    <h1>20% de desconto em sua</h1>
-    <h1>primeira compra!</h1>
+if ($uri === '/') {
+    $uri = '/';
+}
 
-    <p>Comece a anunciar, tenha uma boa avaliação e pagaremos todos os seus fretes!!</p>
+switch ($uri) {
+    case '/':
+    case '/home':
+        require './view/home.php';
+        break;
 
-    <button class="btn-start" onclick="window.location.href='/user/login.php'">Começar</button>
-    </div>
-    
+    case '/login':
+        require __DIR__ . '/view/auth/login.php';
+        break;
 
-    <a href="/admin/dashboard.php" class="website-link" target="_blank">
-      Administração <i class="fas fa-globe"></i>
-    </a>
+    case '/register':
+        if (isLoggedIn()) {
+            redirect('home');
+        }
+        require __DIR__ . '/view/auth/register.php';
+        break; 
 
-    <img src="./static/img/predio.png" alt="Prédio" class="building-img" />
-  </main>
-  
-</body>
-</html>
+    case '/erro':
+        require __DIR__ . '/view/static/elements/erro-cadastro.php';
+        break;
+
+    case '/reclamar':
+        protectPage();
+        require './view/posts/reclamar.php';
+        break;
+
+    case '/posts':
+        protectPage();
+        require './view/posts/index.php';
+        break;
+
+        
+    // Página 404
+    default:
+        http_response_code(404);
+        echo "<!DOCTYPE html>
+        <html>
+        <head><title>404 - Página não encontrada</title></head>
+        <body>
+            <h1>404 - Página não encontrada</h1>
+            <p><a href='" . base_url() . "'>Voltar ao início</a></p>
+        </body>
+        </html>";
+        break;
+}
+?>
