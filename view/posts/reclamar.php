@@ -11,20 +11,37 @@ use backend\Models\Posts;
 use backend\Controller\PostController;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        if (!isset($_SESSION['email'])) {
+            throw new Exception("Acesso negado. Faça login para continuar.");
+        }
 
-    if (isset($_SESSION['email'])) {
-        $_POST['email'] = $_SESSION['email'];
-    } else {
-        $_SESSION['erro'] = "Acesso negado";
+        $email = $_SESSION['email'];
+        $titulo = $_POST['titulo'] ?? '';
+        $descricao = $_POST['descricao'] ?? '';
+
+        if (empty($descricao)) {
+            throw new Exception("A descrição é obrigatória.");
+        }
+
+        $titulo = htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8');
+        $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
+
+        $posts = new Posts($pdo);
+        $repo = new PostController($posts);
+
+        $repo->save([
+            'email' => $email,
+            'titulo' => $titulo,
+            'descricao' => $descricao
+        ], $_FILES);
+
+    } catch (Exception $e) {
+        $_SESSION['erro'] = $e->getMessage();
         header("Location: /erro");
+        exit;
     }
-
-    $posts = new Posts($pdo);
-    $repo = new PostController($posts);
-
-    $repo->save($_POST, $_FILES);
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -33,166 +50,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Criar Post</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/view/static/style/reclama.css">
 </head>
 <body>
-  <?php if (isset($_GET['erro'])): ?>
-    <div class="erro"><?= htmlspecialchars($_GET['erro']) ?></div>
-  <?php endif; ?>
+<?php include './view/static/elements/nav.php'; ?>
+    <br><br>
 
-  <form action="/reclamar" method="POST" enctype="multipart/form-data" id="mainForm">
-    <h1>Novo Post</h1>
-
-    <div class="form-group">
-      <label for="titulo">Título (opcional):</label>
-      <textarea id="titulo" name="titulo" rows="1" placeholder="Título do post"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="descricao">Descrição:</label>
-      <textarea id="descricao" name="descricao" rows="5" required placeholder="Descreva o local ou problema"></textarea>
-      <div class="limit-info">
-        <small>Limite: 1000 caracteres</small>
-        <small id="char-counter">0/1000</small>
-      </div>
-    </div>
-
-    <div class="form-group upload-group">
-      <label>Anexar Imagens (opcional):</label>
-      <input type="file" id="imagens" name="imagens[]" accept="image/png, image/jpeg, image/gif" multiple>
-      <small>Máximo 4 imagens, até 5 MB cada</small>
-      <div id="file-list" class="file-list"></div>
-    </div>
-
-    <button type="submit" class="submit-button" id="submitButton">Enviar</button>
-</form>
-
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const descricao = document.getElementById('descricao');
-    const charCounter = document.getElementById('char-counter');
-    const maxLength = 1000;
-    console.log("kjfalsdfj");
-    if (!descricao || !charCounter) return;
-
-    atualizarContador();
-
-    descricao.addEventListener('input', atualizarContador);
-
-    function atualizarContador() {
-        const comprimento = descricao.value.length;
-
-        charCounter.textContent = `${comprimento}/${maxLength}`;
-
-        if (comprimento > maxLength * 0.9) {
-            charCounter.style.color = '#ff6b6b';
-        } else {
-            charCounter.style.color = '';
-        }
-    }
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('imagem');
-    const fileList = document.getElementById('file-list');
-    const uploadLabel = document.querySelector('.file-upload-label');
-    const submitButton = document.getElementById('submitButton');
-    const fileLimit = 4;
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    showEmptyMessage();
-
-    uploadLabel.addEventListener('click', function(e) {
-        e.preventDefault();
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', updateFileList);
-
-    function updateFileList() {
-        fileList.innerHTML = '';
+  <div class="container">
+    <h1>Criar Novo Post</h1>
+    
+    <?php if (!empty($errors)): ?>
+        <div class="message error">
+            <strong>Erros encontrados:</strong>
+            <ul class="error-list">
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php elseif (isset($success) && $success): ?>
+        <div class="message success">
+            Post criado com sucesso!
+        </div>
+    <?php endif; ?>
+    
+    <form method="POST" enctype="multipart/form-data" id="mainForm">
+        <div class="form-group">
+            <label for="titulo">Título (opcional):</label>
+            <textarea id="titulo" name="titulo" rows="1" placeholder="Título do post"><?php 
+                echo isset($titulo) ? htmlspecialchars($titulo) : ''; 
+            ?></textarea>
+        </div>
         
-        if (!fileInput.files.length) {
-            showEmptyMessage();
-            return;
-        }
-
-        if (fileInput.files.length > fileLimit) {
-            alert(`Você pode enviar no máximo ${fileLimit} imagens.`);
-            fileInput.value = '';
-            showEmptyMessage();
-            return;
-        }
-
-        Array.from(fileInput.files).forEach((file, index) => {
-            if (file.size > maxSize) {
-                alert(`O arquivo "${file.name}" excede o limite de 5MB.`);
-                fileInput.value = '';
-                showEmptyMessage();
-                return;
-            }
-
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(file.type)) {
-                alert(`O arquivo "${file.name}" não é um tipo de imagem válido.`);
-                fileInput.value = '';
-                showEmptyMessage();
-                return;
-            }
-
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
+        <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" rows="5" required maxlength="1000" placeholder="Descreva o local ou problema"><?php 
+                echo isset($descricao) ? htmlspecialchars($descricao) : ''; 
+            ?></textarea>
+            <div class="limit-info">
+                <small>Limite: 1000 caracteres</small>
+                <small id="char-counter">0/1000</small>
+            </div>
+        </div>
+        
+        <div class="form-group upload-group">
+            <label>Anexar Imagens (opcional, máximo 4):</label>
             
-            fileItem.innerHTML = `
-                <span class="file-icon">📄</span>
-                <div class="file-info">
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-size">${formatFileSize(file.size)}</span>
-                </div>
-                <span class="file-remove" data-index="${index}">×</span>
-            `;
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <p class="upload-text">Arraste e solte suas imagens aqui ou clique para selecionar</p>
+                <button type="button" class="btn" id="selectFilesBtn">Selecionar Imagens</button>
+                <input type="file" id="imagens" name="imagens[]" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" multiple class="file-input">
+            </div>
             
-            fileList.appendChild(fileItem);
-        });
-
-        document.querySelectorAll('.file-remove').forEach(btn => {
-            btn.addEventListener('click', function() {
-                removeFile(parseInt(this.getAttribute('data-index')));
-            });
-        });
-        updateCounter();
-    }
-
-    function removeFile(index) {
-        const dt = new DataTransfer();
-        const files = fileInput.files;
+            <div class="counter">
+                <span id="selectedCount">0</span> de 4 imagens selecionadas
+            </div>
+            
+            <div class="preview-container" id="previewContainer"></div>
+        </div>
         
-        for (let i = 0; i < files.length; i++) {
-            if (i !== index) dt.items.add(files[i]);
-        }
-        
-        fileInput.files = dt.files;
-        updateFileList();
-    }
-
-    function showEmptyMessage() {
-        fileList.innerHTML = '<div class="empty-message">Nenhuma imagem selecionada</div>';
-        updateCounter();
-    }
-
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    function updateCounter() {
-        const count = fileInput.files ? fileInput.files.length : 0;
-        uploadLabel.textContent = `Adicionar Imagens (${count}/${fileLimit})`;
-    }
-});
-  </script>
+        <button type="submit" class="submit-button" id="submitBtn">Enviar Post</button>
+    </form>
+  </div>
+  
+  <script src="/view/static/js/verificaReclamacao.js"></script>
 </body>
 </html>

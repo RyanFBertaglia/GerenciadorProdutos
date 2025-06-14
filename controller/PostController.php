@@ -6,92 +6,82 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 use backend\Models\Posts;
+use Exception;
 
 class PostController {
-    private $users;
+    private $posts;
 
     public function __construct(Posts $posts) {
         $this->posts = $posts;
     }
 
-    /*function save(array $data) {
-        try {
-            $this->posts->create($data);
-        } catch(Exception $e) {
-            $_SESSION['erro'] = "Erro: ". $e->getMessage();
-            header("Location: /erro");
-            exit;
-        }
-    }*/
-
-    function getUserPosts($email) {
+    public function getUserPosts($email) {
         return $this->posts->findByUser($email);
     }
 
-    function getAll() {
+    public function getAll() {
         return $this->posts->getAll();
     }
 
     public function save(array $data, array $arquivos) {
         try {
-            $email = $data['email'] ?? '';
-            $titulo = $data['titulo'] ?? '';
-            $descricao = $data['descricao'] ?? '';
-            $imagens = [];
-    
-            if (empty($email) || empty($descricao)) {
-                throw new Exception("Email e descrição são obrigatórios.");
+            if (empty($data['email'])) {
+                throw new Exception("O email é obrigatório.");
             }
-    
-            // Processamento das imagens (até 5)
+            
+            if (empty($data['descricao'])) {
+                throw new Exception("A descrição é obrigatória.");
+            }
+
+            $uploadDir = './uploads/';
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $imagens = [];
+
             if (!empty($arquivos['imagens']) && is_array($arquivos['imagens']['tmp_name'])) {
                 $total = count($arquivos['imagens']['tmp_name']);
                 $total = min($total, 5);
-    
+
                 for ($i = 0; $i < $total; $i++) {
                     if ($arquivos['imagens']['error'][$i] === UPLOAD_ERR_OK) {
                         $tmp = $arquivos['imagens']['tmp_name'][$i];
                         $name = basename($arquivos['imagens']['name'][$i]);
                         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
                         $permitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    
+
                         if (!in_array($ext, $permitidos)) {
                             throw new Exception("Tipo de imagem não permitido: $ext");
                         }
-    
-                        // Diretório de uploads no mesmo nível que este arquivo
-                        $destino = "./uploads/" . uniqid() . "." . $ext;
-    
-                        if (!is_dir("./uploads")) {
-                            mkdir("./uploads", 0777, true);
-                        }
-    
+
+                        $novoNome = uniqid('img_') . "." . $ext;
+                        $destino = $uploadDir . $novoNome;
+
                         if (move_uploaded_file($tmp, $destino)) {
-                            // Armazena o caminho relativo para depois usar no site
-                            $imagens[] = $destino;
+                            $imagens[] = './uploads/' . $novoNome;
                         } else {
-                            throw new Exception("Falha ao mover a imagem $name.");
+                            throw new Exception("Falha ao mover o arquivo $name.");
                         }
                     }
                 }
             }
-    
+
             $this->posts->create([
-                'email' => $email,
-                'titulo' => $titulo,
-                'descricao' => $descricao,
+                'email' => $data['email'],
+                'titulo' => $data['titulo'] ?? '',
+                'descricao' => $data['descricao'],
                 'imagens' => $imagens
             ]);
-    
+
             header("Location: /sucesso");
             exit;
+            
         } catch (Exception $e) {
-            $_SESSION['erro'] = "Erro: ". $e->getMessage();
+            $_SESSION['erro'] = "Erro: " . $e->getMessage();
             header("Location: /erro");
             exit;
         }
     }
-    
-
-
 }

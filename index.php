@@ -8,7 +8,6 @@ if ($uri === '') {
     $uri = '/';
 }
 
-
 if ($uri === '/') {
     $uri = '/';
 }
@@ -39,11 +38,24 @@ switch ($uri) {
         require './view/posts/reclamar.php';
         break;
 
+    case '/sucesso':
+        require './view/static/elements/sucesso.php';
+        break;
+
     case '/posts':
         protectPage();
         require './view/posts/index.php';
         break;
-
+    
+    case '/comentarios':
+        protectPage();
+        require './view/posts/comentarios.php';
+        break;
+    
+    case '/comentar':
+        protectPage();
+        require './view/posts/comentar.php';
+        break;
         
     // Página 404
     default:
