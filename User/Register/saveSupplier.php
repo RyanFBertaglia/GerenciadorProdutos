@@ -1,11 +1,10 @@
 <?php
-// Inicia a sessão para armazenar mensagens de erro
 session_start();
 
 $host = "localhost";
 $usuario = "root";
 $senha_db = ""; 
-$banco = "dados";
+$banco = "loja";
 
 $conexao = new mysqli($host, $usuario, $senha_db, $banco);
 

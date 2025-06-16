@@ -46,7 +46,7 @@ try {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./static/style/main.css">
+  <link rel="stylesheet" href="../static/style/main.css">
   <link rel="stylesheet" href="./static/style/tipografia.css">
   <style>
     body {
@@ -124,6 +124,28 @@ try {
     body.collapsed aside {
         transform: translateX(-100%);
     }
+
+    .btn-start {
+    top: 4%;
+    right: 4%;
+    padding: 15px 40px;
+    background: linear-gradient(to right, #4a90e2, #1b68d1);
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: fixed;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.btn-start:hover {
+    background: linear-gradient(to right, #1b68d1, #4a90e2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
   </style>
 </head>
 <body>
@@ -210,6 +232,7 @@ try {
             <a href="/checkout" class="btn btn-primary">Finalizar Compra</a>
         </div>
     <?php endif; ?>
+    <button class="btn-start" onclick="window.location.href='/user/pedidos'">Acompanhar Pedidos</button>
 </main>
 
 <script>

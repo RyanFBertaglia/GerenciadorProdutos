@@ -2,11 +2,10 @@
 // Inicie a sessão no topo do arquivo
 session_start();
 
-// Configurações do banco de dados
 $host = "localhost";
 $usuario = "root";
 $senha = "";
-$banco = "dados";
+$banco = "loja";
 
 $conexao = new mysqli($host, $usuario, $senha, $banco);
 

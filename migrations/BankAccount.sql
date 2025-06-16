@@ -1,4 +1,4 @@
-USE dados;
+USE loja;
 
 -- Criação da tabela BankAccount
 CREATE TABLE BankAccount (

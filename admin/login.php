@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "Por favor, preencha todos os campos.";
     } else {
         try {
-            // Prepare statement with email verification
             $stmt = $pdo->prepare("
                 SELECT id, nome, email, senha 
                 FROM admin 
@@ -32,10 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($admin && password_verify($senha, $admin['senha'])) {
-                // Regenerate session ID to prevent fixation
                 session_regenerate_id(true);
                 
-                // Store only necessary admin data in session
                 $_SESSION['admin'] = [
                     'id' => $admin['id'],
                     'nome' => $admin['nome'],
@@ -43,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'last_login' => time()
                 ];
                 
-                // Set secure session cookie
                 setcookie(
                     session_name(),
                     session_id(),
@@ -56,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'samesite' => 'Strict'
                     ]
                 );
-
+                $_SESSION['erro'] = "";
                 header('Location: /admin/dashboard');
                 exit;
             } else {

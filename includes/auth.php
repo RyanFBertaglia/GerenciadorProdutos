@@ -28,7 +28,7 @@ function login($email, $senha, $pdo) {
     if ($usuario && password_verify($senha, $usuario['senha'])) {
         unset($usuario['senha']);
         $_SESSION['usuario'] = $usuario;
-        
+        $_SESSION['erro'] = "";
         return true;
     }
     
@@ -140,6 +140,7 @@ function loginFornecedor($email, $senha, $pdo) {
         $fornecedor['tipo'] = 'fornecedor';
         
         $_SESSION['usuario'] = $fornecedor;
+        $_SESSION['erro'] = "";
         return true;
     }
     return false;

@@ -125,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['solicitar_devolucao']
     exit;
 }
 
-// Query modificada para obter todos os dados necessários
 $stmt = $pdo->prepare("
     SELECT 
         o.*,
@@ -199,21 +198,18 @@ foreach ($pedidos as &$pedido) {
 .status.devolucao_pendente { background-color: #fff3cd; color: #856404; }
 .status.devolvido { background-color: #f8d7da; color: #721c24; }
 
-/* MODIFICAÇÃO: Substituir .itens-lista por .pedido-itens */
 .pedido-itens {
     margin: 10px 0;
-    /* Remove background e padding para evitar caixa aninhada */
 }
 
-/* NOVA CLASSE: Estilo para cada item individual */
 .produto-item {
     display: flex;
     align-items: center;
     padding: 10px;
     margin: 10px 0;
-    background: #f5f5f5; /* Levemente diferente do fundo do pedido */
+    background: #f5f5f5;
     border-radius: 8px;
-    border: none; /* Remove bordas para evitar aninhamento */
+    border: none;
 }
 
 .produto-item img {
@@ -332,9 +328,31 @@ textarea {
     border-radius: 5px;
     border: 1px solid #ddd;
 }
+
+body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        grid-template-areas: "aside main";
+        font-family: 'Montserrat', sans-serif;
+        transition: all 0.3s ease;
+    }
+main {
+    grid-area: main;
+    padding: 3%;
+}
+aside {
+    grid-area: aside;
+}
     </style>
+    <link rel="stylesheet" href="../static/style/main.css">
 </head>
 <body>
+<?php include './static/elements/sidebar-main.php'; ?>
+<main>
+    <br><br><br>
     <h1>Meus Pedidos</h1>
 
     <?php if ($sucesso): ?>
@@ -362,7 +380,6 @@ textarea {
                 </div>
             </div>
 
-            <!-- Agora usando os dados do fornecedor -->
             <p><strong>Fornecedor:</strong> <?= htmlspecialchars($pedido['nome_fornecedor']) ?></p>
             <p><strong>Total:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
 
@@ -370,12 +387,10 @@ textarea {
                 <strong>Itens do Pedido:</strong>
                 <?php foreach ($pedido['itens'] as $item): ?>
                     <div class="produto-item" style="display: flex; align-items: center; padding: 10px; margin: 10px 0; background: #f9f9f9; border-radius: 8px; border: none;">
-                        <!-- Foto do produto -->
                         <img src="./static/uploads/<?= htmlspecialchars($item['foto_produto']) ?>" 
                              alt="<?= htmlspecialchars($item['nome_produto']) ?>"
                              style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-right: 15px; flex-shrink: 0;">
                         
-                        <!-- Dados do produto -->
                         <div class="produto-info" style="flex: 1;">
                             <div style="font-weight: bold; margin-bottom: 5px;"><?= htmlspecialchars($item['nome_produto']) ?></div>
                             <div style="font-size: 14px; color: #666; margin-bottom: 5px;"><?= htmlspecialchars($item['description']) ?></div>
@@ -458,5 +473,6 @@ textarea {
     <?php endif; ?>
 
     <p><a href="/">Voltar ao painel</a></p>
+</main>
 </body>
 </html>

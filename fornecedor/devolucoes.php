@@ -5,13 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once './includes/db.php';
 require_once './includes/auth.php';
 
-// Verifica se o usuário é um fornecedor logado
-if (!isLoggedIn() || $_SESSION['usuario']['tipo'] !== 'fornecedor') {
-    header('Location: /login');
-    exit;
-}
+protectFornecedorPage();
 
-$fornecedor_id = $_SESSION['usuario']['id']; // Removido o ID fixo
+$fornecedor_id = $_SESSION['usuario']['id'];
 $sucesso = $_SESSION['sucesso'] ?? null;
 $erro = $_SESSION['erro'] ?? null;
 unset($_SESSION['sucesso'], $_SESSION['erro']);

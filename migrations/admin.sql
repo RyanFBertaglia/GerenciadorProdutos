@@ -1,4 +1,4 @@
-USE dados;
+USE loja;
 
 CREATE TABLE admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
