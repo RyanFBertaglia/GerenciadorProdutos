@@ -49,42 +49,6 @@ function logout() {
     session_destroy();
 }
 
-function gerarTokenRecuperacao($email, $pdo) {
-    $token = bin2hex(random_bytes(32));
-    $expiracao = date('Y-m-d H:i:s', strtotime(TOKEN_EXPIRACAO));
-    
-    $stmt = $pdo->prepare("UPDATE usuarios 
-        SET token_recuperacao = ?, expiracao_token = ? 
-        WHERE email = ?");
-    
-    $stmt->execute([$token, $expiracao, $email]);
-    
-    return $token;
-}
-
-function validarTokenRecuperacao($token, $pdo) {
-    $stmt = $pdo->prepare("SELECT id FROM usuarios 
-        WHERE token_recuperacao = ? 
-        AND expiracao_token > NOW()");
-    
-    $stmt->execute([$token]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-function atualizarSenha($usuarioId, $novaSenha, $pdo) {
-    if (strlen($novaSenha) < MIN_PASSWORD_LENGTH) {
-        throw new Exception("A senha deve ter pelo menos " . MIN_PASSWORD_LENGTH . " caracteres");
-    }
-    
-    $senhaHash = password_hash($novaSenha, PASSWORD_BCRYPT);
-    
-    $stmt = $pdo->prepare("UPDATE usuarios 
-        SET senha = ?, token_recuperacao = NULL, expiracao_token = NULL 
-        WHERE id = ?");
-    
-    return $stmt->execute([$senhaHash, $usuarioId]);
-}
-
 function getUserData($campo = null) {
     if (!isLoggedIn()) return null;
     

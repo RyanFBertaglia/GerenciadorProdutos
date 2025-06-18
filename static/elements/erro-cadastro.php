@@ -1,8 +1,8 @@
 <?php
-// Inicia a sessão para acessar mensagens de erro
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Verifica se há mensagens de erro na sessão
 $erro = $_SESSION['erro'] ?? '';
 $dados = $_SESSION['dados_form'] ?? [];
 ?>

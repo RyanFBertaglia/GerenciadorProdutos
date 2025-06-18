@@ -5,23 +5,29 @@ require_once './includes/auth.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-redirectIfLoggedIn('/produtos/index.php');
 
-$erro = $_SESSION['erro'] ?? '';
-unset($_SESSION['erro']);
+use Api\Controller\AuthController;
+use Api\Model\ClienteModel;
+use Api\Services\ValidarDados;
+
+$usuarioModel = new ClienteModel($pdo);
+$authController = new AuthController($usuarioModel);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    require __DIR__ . '/../vendor/autoload.php';
+    $pdo = require __DIR__ . '/../includes/db.php';
+
+    $usuarioModel = new ClienteModel($pdo);
+    $authController = new AuthController($usuarioModel);
+
     $email = $_POST['email'] ?? '';
     $senha = $_POST['senha'] ?? '';
 
-    if (login($email, $senha, $pdo)) {
-        $redirectUrl = $_SESSION['redirect_url'] ?? '/';
-        unset($_SESSION['redirect_url']);
-        header("Location: $redirectUrl");
-        exit;
-    } else {
-        $erro = "Email ou senha inválidos.";
-    }
+    $authController->login($email, $senha);
+    header('Location: /');
+    $_SESSION['erro'] = "";
+    exit;
 }
 ?>
 

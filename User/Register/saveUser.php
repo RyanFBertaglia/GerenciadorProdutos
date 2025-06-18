@@ -1,6 +1,6 @@
 <?php
-// Inicie a sessão no topo do arquivo
 session_start();
+
 
 $host = "localhost";
 $usuario = "root";
@@ -9,9 +9,10 @@ $banco = "loja";
 
 $conexao = new mysqli($host, $usuario, $senha, $banco);
 
+
 if ($conexao->connect_error) {
     $_SESSION['erro'] = "Erro de conexão com o banco de dados: " . $conexao->connect_error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
@@ -34,7 +35,6 @@ function validarCPF($cpf) {
     return true;
 }
 
-// Recebe dados do formulário
 $nome = htmlspecialchars($_POST['nome'] ?? '');
 $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
 $senha = $_POST['senha'] ?? '';
@@ -42,10 +42,8 @@ $cpf = preg_replace('/[^0-9]/', '', $_POST['cpf'] ?? '');
 $phone = preg_replace('/[^0-9]/', '', $_POST['phone'] ?? '');
 $birthdate = $_POST['birthdate'] ?? '';
 
-// Tratamento do endereço completo
 $endereco_completo = htmlspecialchars($_POST['endereco_completo'] ?? '');
 
-// Se o endereço completo não foi enviado, tenta montar dos campos individuais
 if (empty($endereco_completo)) {
     $cep = $_POST['cep'] ?? '';
     $logradouro = $_POST['logradouro'] ?? '';
@@ -63,7 +61,7 @@ if (empty($endereco_completo)) {
 if (!validarCPF($cpf)) {
     $_SESSION['erro'] = "CPF inválido!";
     $_SESSION['dados'] = $_POST; // Armazena dados para possível recuperação
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
@@ -73,14 +71,14 @@ $stmt_verifica = $conexao->prepare($sql_verifica);
 
 if (!$stmt_verifica) {
     $_SESSION['erro'] = "Erro na preparação da consulta: " . $conexao->error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
 $stmt_verifica->bind_param("s", $email);
 if (!$stmt_verifica->execute()) {
     $_SESSION['erro'] = "Erro na execução da consulta: " . $stmt_verifica->error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
@@ -89,7 +87,7 @@ $stmt_verifica->store_result();
 if ($stmt_verifica->num_rows > 0) {
     $_SESSION['erro'] = "Este e-mail já está cadastrado!";
     $_SESSION['dados'] = $_POST;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
@@ -99,14 +97,14 @@ $stmt_verificaCpf = $conexao->prepare($sql_verificaCpf);
 
 if (!$stmt_verificaCpf) {
     $_SESSION['erro'] = "Erro na preparação da consulta: " . $conexao->error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
 $stmt_verificaCpf->bind_param("s", $cpf);
 if (!$stmt_verificaCpf->execute()) {
     $_SESSION['erro'] = "Erro na execução da consulta: " . $stmt_verificaCpf->error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /static/elements/erro-cadastro");
     exit();
 }
 
@@ -115,7 +113,7 @@ $stmt_verificaCpf->store_result();
 if ($stmt_verificaCpf->num_rows > 0) {
     $_SESSION['erro'] = "Este CPF já está cadastrado!";
     $_SESSION['dados'] = $_POST;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
@@ -123,18 +121,17 @@ if ($stmt_verificaCpf->num_rows > 0) {
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 if (!$senha_hash) {
     $_SESSION['erro'] = "Erro ao criptografar a senha!";
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
-// Insere no banco de dados
 $sql_insere = "INSERT INTO usuarios (nome, email, senha, cpf, telefone, endereco, data_nascimento)
                VALUES (?, ?, ?, ?, ?, ?, ?)";
 $stmt_insere = $conexao->prepare($sql_insere);
 
 if ($stmt_insere === false) {
     $_SESSION['erro'] = "Erro na preparação da query: " . $conexao->error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
@@ -146,11 +143,10 @@ if ($stmt_insere->execute()) {
     exit;
 } else {
     $_SESSION['erro'] = "Erro ao cadastrar: " . $stmt_insere->error;
-    header("Location: /static/elements/erro-cadastro.php");
+    header("Location: /erro");
     exit();
 }
 
-// Fechar conexões
 $stmt_verifica->close();
 $stmt_insere->close();
 $conexao->close();

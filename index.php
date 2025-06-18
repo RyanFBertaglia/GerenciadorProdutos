@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 require_once 'includes/auth.php';
+require __DIR__ . '/vendor/autoload.php';
 
 $basePath = parse_url(Config::getBaseUrl(), PHP_URL_PATH) ?: '';
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -29,6 +30,10 @@ switch ($uri) {
             redirect('fornecedor/dashboard');
         }
         require './fornecedor/login.php';
+        break;
+
+    case '/erro':
+        require './static/elements/erro-cadastro.php';
         break;
 
     // === ROTAS DO FORNECEDOR ===

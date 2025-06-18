@@ -1,3 +1,38 @@
+<?php
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    use Api\Controller\AuthController;
+    use Api\Model\ClienteModel;
+    use Api\Services\ValidarDados;
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
+        require __DIR__ . '/../vendor/autoload.php';
+        $pdo = require __DIR__ . '/../includes/db.php';
+
+        ValidarDados::verificaExistencia($_POST['cpf'], $_POST['email'], $pdo);
+
+        $usuarioModel = new ClienteModel($pdo);
+        $authController = new AuthController($usuarioModel);
+        $authController->cadastro([
+            'nome' => $_POST['nome'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'senha' => $_POST['senha'] ?? '',
+            'cpf' => $_POST['cpf'] ?? '',
+            'telefone' => $_POST['phone'] ?? '',
+            'endereco' => $_POST['endereco_completo'] ?? '',
+            'data_nascimento' => $_POST['birthdate'] ?? ''
+        ]);
+        $_SESSION['erro'] = "";
+        header('Location: /login');
+        exit;
+        
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -41,7 +76,7 @@
     <?php include './static/elements/sidebar-main.php'; ?>
 
     <div class="container-fluid">
-        <form action="./user/register/saveUser.php" method="POST" onsubmit="return validarFormulario()">
+        <form action="./user/registerUser.php" method="POST" onsubmit="return validarFormulario()">
             <img src="./static/img/predio.png" alt="Prédio" class="building-img" style="display: block; margin: 0 auto 0px;">
             <h2 style="text-align: center;">Cadastro Completo</h2>
 
@@ -152,7 +187,6 @@
         }
 
         function validarFormulario() {
-    // Verifica se os campos de endereço estão visíveis
     const addressFieldsVisible = document.getElementById('address-fields').style.display === 'block';
     
     if (addressFieldsVisible) {
@@ -162,14 +196,12 @@
             return false;
         }
 
-        // Monta o endereço completo
         const enderecoCompleto = `${document.getElementById('cep').value}, ` +
                                `${document.getElementById('logradouro').value}, ` +
                                `${numero}, ` +
                                `${document.getElementById('bairro').value}, ` +
                                `${document.getElementById('cidade').value}-${document.getElementById('uf').value}`;
 
-        // Preenche o campo hidden
         document.getElementById('endereco_completo').value = enderecoCompleto;
     }
     
