@@ -18,25 +18,11 @@ switch ($uri) {
         require './home.php';
         break;
 
-    case '/login':
-        if (isLoggedIn()) {
-            redirect('home');
-        }
-        require './user/login.php';
-        break; 
-
-    case '/login-fornecedor':
-        if (isFornecedor()) {
-            redirect('fornecedor/dashboard');
-        }
-        require './fornecedor/login.php';
-        break;
-
     case '/erro':
         require './static/elements/erro-cadastro.php';
         break;
 
-    // === ROTAS DO FORNECEDOR ===
+    // ROTAS DO FORNECEDOR
     case '/fornecedor/dashboard':
         protectFornecedorPage();
         require './fornecedor/dashboard.php';
@@ -72,7 +58,7 @@ switch ($uri) {
         require './static/elements/pedidos.php';
         break;
 
-    // === ROTAS GERAIS ===
+    // ROTAS COMPRA
     case '/produto':
         require './produtos/index.php';
         break;
@@ -111,34 +97,53 @@ switch ($uri) {
     case '/carrinho/atualizar':
         require './carrinho/atualizar.php';
         break;
-    // === ROTAS DE AUTENTICAÇÃO ===
+
+
+    // ROTAS DE AUTENTICAÇÃO
+
+    case '/login':
+        if (isLoggedIn()) {
+            redirect('home');
+        }
+        require './user/login-cliente.php';
+        break; 
+
+    case '/login-fornecedor':
+        if (isFornecedor()) {
+            redirect('fornecedor/dashboard');
+        }
+        require './user/login-fornecedor.php';
+        break;
+
+    case '/login-admin':
+        if (isAdmin()) {
+            redirect('/admin/dashboard');
+            exit;
+        }
+        require './user/login-admin.php';
+        break;
+
     case '/logout':
         logout();
-        redirect('login');
+        redirect('home');
         break;
 
     case '/cadastro-usuario':
         if (isLoggedIn()) {
             redirect('home');
         }
-        require './user/registerUser.php';
+        require './user/cadastrar-cliente.php';
         break;
 
     case '/cadastro-fornecedor':
         if (isLoggedIn()) {
             redirect('fornecedor/dashboard');
         }
-        require './user/registerSupplier.php';
+        require './user/cadastrar-fornecedor.php';
         break;    
-        
-    case '/login-admin':
-        if (isAdmin()) {
-            redirect('./admin/dashboard');
-        }
-        require './admin/login.php';
-        break;
     
-    // === ROTAS ADMIN ===
+    // ROTAS ADMIN
+
     case '/admin/dashboard':
         protectAdminPage();
         require './admin/dashboard.php';
@@ -188,4 +193,13 @@ switch ($uri) {
         </html>";
         break;
 }
+
+function logout() {
+    if(session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    session_unset();
+    session_destroy();
+}
+
 ?>

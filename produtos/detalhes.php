@@ -142,7 +142,7 @@ if (!$produto) {
     </style>
 </head>
 <body>
-<?php include './static/elements/sidebar-fornecedor.php'; ?>
+<?php include './static/elements/sidebar-main.php'; ?>
     <main>
         <br><br>
     <h1><?= htmlspecialchars($produto['description']) ?></h1>

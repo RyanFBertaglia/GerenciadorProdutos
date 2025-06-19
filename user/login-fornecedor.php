@@ -1,24 +1,30 @@
 <?php
-require_once './includes/db.php';
-require_once './includes/auth.php';
-
-if (isFornecedor()) {
-    header('Location: /fornecedor/dashboard');
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Api\Controller\AuthController;
+use Api\Model\FornecedorModel;
+use Api\Includes\Database;
 
 $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $senha = $_POST['senha'];
+
+    $pdo = Database::getInstance();
+    $fornecedorModel = new FornecedorModel($pdo);
+    $authController = new AuthController($fornecedorModel);
+
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    $authController->login($email, $senha);
+    $_SESSION['erro'] = "";
+    header('Location: /fornecedor/dashboard');
     
-    if (loginFornecedor($email, $senha, $pdo)) {
-        header('Location: /fornecedor/dashboard');
-        exit;
-    } else {
-        $erro = "Email ou senha inválidos";
-    }
+    exit;
 }
 ?>
 
@@ -38,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php include './static/elements/sidebar-main.php'; ?>
     <div class="container-fluid">
-    <form method="POST">
+    <form method="POST" action="/login-fornecedor">
         <h2>Área do Fornecedor</h2>
         <?php if ($erro): ?>
             <div class="erro"><?= htmlspecialchars($erro) ?></div>

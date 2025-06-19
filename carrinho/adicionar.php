@@ -12,12 +12,7 @@ $usuario_id = $_SESSION['usuario']['id'];
 $produto_id = $_POST['produto_id'] ?? null;
 $quantidade = $_POST['quantidade'] ?? 1;
 
-// Validação básica
-if (!$produto_id) {
-    $_SESSION['erro'] = "ID do produto inválido";
-    header("Location: /produto/detalhes?id=$produto_id"); // Rota corrigida para o router
-    exit;
-}
+
 
 // Verificar estoque
 try {
@@ -27,7 +22,7 @@ try {
 
     if (!$produto) {
         $_SESSION['erro'] = "Produto não encontrado";
-        header("Location: /produto/detalhes?id=$produto_id");
+        header("Location: /erro");
         exit;
     }
 
@@ -53,7 +48,7 @@ try {
         $novaQuantidade = $item['quantidade'] + $quantidade;
         if ($produto['stock'] < $novaQuantidade) {
             $_SESSION['erro'] = "Quantidade total no carrinho excede o estoque disponível";
-            header("Location: /produto/detalhes?id=$produto_id");
+            header("Location: /erro");
             exit;
         }
         
@@ -71,6 +66,6 @@ try {
 
 } catch (PDOException $e) {
     $_SESSION['erro'] = "Erro no banco de dados: " . $e->getMessage();
-    header("Location: /produto/detalhes?id=$produto_id");
+    header("Location: /erro");
     exit;
 }

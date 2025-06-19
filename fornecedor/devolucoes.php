@@ -7,7 +7,7 @@ require_once './includes/auth.php';
 
 protectFornecedorPage();
 
-$fornecedor_id = $_SESSION['usuario']['id'];
+$fornecedor_id = $_SESSION['fornecedor']['id'];
 $sucesso = $_SESSION['sucesso'] ?? null;
 $erro = $_SESSION['erro'] ?? null;
 unset($_SESSION['sucesso'], $_SESSION['erro']);
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                          JOIN OrderItems oi ON o.id = oi.idOrder
                                          JOIN produtos p ON oi.idProduct = p.idProduct
                                          JOIN usuarios u ON o.idUser = u.id
-                                         WHERE o.id = ? AND p.supplier = ? AND o.status = 'Devolucao_Pendente'");
+                                         WHERE o.id = ? AND p.supplier = ? AND o.status = 'Devolucao_Pendente' FOR UPDATE");
             $stmtVerifica->execute([$pedido_id, $fornecedor_id]);
             $pedido = $stmtVerifica->fetch(PDO::FETCH_ASSOC);
         
@@ -35,34 +35,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Pedido não encontrado, não pertence a você ou não está pendente de devolução.");
             }
         
+            // Define o novo status padronizado
+            $novo_status = ($acao === 'aprovar') ? 'Devolvido' : 'Devolucao_Rejeitada';
+            
             // Atualiza status do pedido
-            $novo_status = ($acao === 'aprovar') ? 'Devolvido' : 'Confirmado';
-            $stmtAtualiza = $pdo->prepare("UPDATE Orders SET 
-                                          status = ?, 
-                                          dataConfirmacao = NOW(), 
-                                          " . ($acao === 'rejeitar' ? "motivoRecusa = ?" : "motivoRecusa = NULL") . "
-                                          WHERE id = ?");
-            
-            $params = [$novo_status];
-            if ($acao === 'rejeitar') {
-                $params[] = $motivoRecusa;
-            }
-            $params[] = $pedido_id;
-            
-            $result = $stmtAtualiza->execute($params);
-        
-            if (!$result) {
-                throw new Exception("Erro ao atualizar status do pedido.");
-            }
-            /*
-            Reembolso: 
-                - Busca conta Fornecedor
-                - Busca conta Cliente
-                - Verifica saldo do fornecedor
-                - Realiza a transferência
-            */
-        
             if ($acao === 'aprovar') {
+                $stmtAtualiza = $pdo->prepare("UPDATE Orders SET 
+                                              status = ?, 
+                                              dataAprovacaoDevolucao = NOW(),
+                                              motivoRecusa = NULL
+                                              WHERE id = ?");
+                $stmtAtualiza->execute([$novo_status, $pedido_id]);
+            } else {
+                $stmtAtualiza = $pdo->prepare("UPDATE Orders SET 
+                                              status = ?, 
+                                              dataRejeicaoDevolucao = NOW(),
+                                              motivoRecusa = ?
+                                              WHERE id = ?");
+                $stmtAtualiza->execute([$novo_status, $motivoRecusa, $pedido_id]);
+            }
+        
+            // Se aprovado, processa o reembolso
+            if ($acao === 'aprovar') {
+                // Busca conta do fornecedor
                 $stmtContaFornecedor = $pdo->prepare("SELECT * FROM BankAccount 
                                                     WHERE idFornecedor = ? AND tipo = 'fornecedor' AND status = 'A'
                                                     LIMIT 1 FOR UPDATE");
@@ -73,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Sua conta bancária não foi encontrada ou está inativa.");
                 }
         
+                // Busca conta do cliente
                 $stmtContaCliente = $pdo->prepare("SELECT * FROM BankAccount 
                                                  WHERE idUser = ? AND tipo = 'usuario' AND status = 'A'
                                                  LIMIT 1 FOR UPDATE");
@@ -83,10 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Conta bancária do cliente não encontrada ou inativa.");
                 }
         
+                // Verifica saldo do fornecedor
                 if ($contaFornecedor['balance'] < $pedido['total']) {
                     throw new Exception("Saldo insuficiente em sua conta para realizar o reembolso.");
                 }
         
+                // Realiza a transferência (débito fornecedor, crédito cliente)
                 $stmtDebito = $pdo->prepare("UPDATE BankAccount 
                                             SET balance = balance - ? 
                                             WHERE idAccount = ?");
@@ -102,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $msg = ($acao === 'aprovar') 
                    ? "Devolução aprovada! R$ " . number_format($pedido['total'], 2, ',', '.') . " reembolsados para o cliente." 
-                   : "Devolução rejeitada. O pedido #{$pedido_id} foi mantido como confirmado.";
+                   : "Devolução rejeitada. O motivo foi informado ao cliente.";
             $_SESSION['sucesso'] = $msg;
         
         } catch (Exception $e) {
@@ -115,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Devolução pendente para o fornecedor
+// Consulta devoluções pendentes
 $stmt = $pdo->prepare("
     SELECT o.*, u.nome AS nome_cliente 
     FROM Orders o
@@ -129,7 +127,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$fornecedor_id]);
 $pedidos_pendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Devoluções finalizadas
+// Consulta histórico de devoluções
 $stmt = $pdo->prepare("
     SELECT o.*, u.nome AS nome_cliente
     FROM Orders o
@@ -137,10 +135,10 @@ $stmt = $pdo->prepare("
     JOIN produtos p ON oi.idProduct = p.idProduct
     JOIN usuarios u ON o.idUser = u.id
     WHERE p.supplier = ?
-      AND o.status IN ('Devolvido', 'Confirmado') 
+      AND o.status IN ('Devolvido', 'Devolucao_Rejeitada') 
       AND o.dataDevolucao IS NOT NULL
     GROUP BY o.id
-    ORDER BY o.dataConfirmacao DESC
+    ORDER BY COALESCE(o.dataAprovacaoDevolucao, o.dataRejeicaoDevolucao) DESC
 ");
 $stmt->execute([$fornecedor_id]);
 $historico_devolucoes = $stmt->fetchAll(PDO::FETCH_ASSOC);

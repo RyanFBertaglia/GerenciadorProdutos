@@ -11,3 +11,5 @@
         *Modificar status para aprovado ou recusado de uma devolução
             - Nusca uma OrderItem join Orders (getById) 
 */ 
+
+// composer dump-autoload

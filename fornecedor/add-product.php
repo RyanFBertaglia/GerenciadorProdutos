@@ -1,69 +1,69 @@
-<?php
-require_once './includes/db.php';
-require_once './includes/auth.php';
+    <?php
+    require_once './includes/db.php';
+    require_once './includes/auth.php';
 
-protectFornecedorPage();
+    protectFornecedorPage();
 
-$fornecedorId = $_SESSION['usuario']['id'];
-$erro = '';
-$sucesso = '';
+    $fornecedorId = $_SESSION['fornecedor']['id'];
+    $erro = '';
+    $sucesso = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        // Validações
-        if (empty($_POST['description']) || empty($_POST['price']) || empty($_POST['nome'])) {
-            throw new Exception("Preencha todos os campos obrigatórios");
-        }
-
-        if (!is_numeric($_POST['price']) || $_POST['price'] <= 0) {
-            throw new Exception("Preço inválido");
-        }
-
-        // Upload da imagem
-        $imagemNome = '';
-        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            $extensao = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-            $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif'];
-            
-            if (!in_array($extensao, $extensoesPermitidas)) {
-                throw new Exception("Tipo de arquivo não permitido. Use JPG, PNG ou GIF.");
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            // Validações
+            if (empty($_POST['description']) || empty($_POST['price']) || empty($_POST['nome'])) {
+                throw new Exception("Preencha todos os campos obrigatórios");
             }
 
-            $imagemNome = uniqid() . '.' . $extensao;
-            $destino = "./static/uploads/" . $imagemNome;
-
-            if (!move_uploaded_file($_FILES['image']['tmp_name'], $destino)) {
-                throw new Exception("Erro ao fazer upload da imagem");
+            if (!is_numeric($_POST['price']) || $_POST['price'] <= 0) {
+                throw new Exception("Preço inválido");
             }
-        }
 
-        // Inserir no banco
-        $stmt = $pdo->prepare("INSERT INTO produtos 
-            (nome, price, description, supplier, stock, image) 
-            VALUES (?, ?, ?, ?, ?, ?)");
+            // Upload da imagem
+            $imagemNome = '';
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $extensao = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+                $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif'];
+                
+                if (!in_array($extensao, $extensoesPermitidas)) {
+                    throw new Exception("Tipo de arquivo não permitido. Use JPG, PNG ou GIF.");
+                }
 
-        $sucesso = $stmt->execute([
-            $_POST['nome'],
-            floatval($_POST['price']),
-            $_POST['description'],
-            $fornecedorId,
-            intval($_POST['stock'] ?? 0),
-            $imagemNome
-        ]);
+                $imagemNome = uniqid() . '.' . $extensao;
+                $destino = "./static/uploads/" . $imagemNome;
 
-        if ($sucesso) {
-            $_SESSION['sucesso'] = "Produto cadastrado com sucesso! Aguarde aprovação.";
-            header('Location: /fornecedor/dashboard');
-            exit;
-        }
-    } catch (Exception $e) {
-        $erro = $e->getMessage();
-        if (!empty($imagemNome) && file_exists("./assets/uploads/" . $imagemNome)) {
-            unlink("./static/uploads/" . $imagemNome);
+                if (!move_uploaded_file($_FILES['image']['tmp_name'], $destino)) {
+                    throw new Exception("Erro ao fazer upload da imagem");
+                }
+            }
+
+            // Inserir no banco
+            $stmt = $pdo->prepare("INSERT INTO produtos 
+                (nome, price, description, supplier, stock, image) 
+                VALUES (?, ?, ?, ?, ?, ?)");
+
+            $sucesso = $stmt->execute([
+                $_POST['nome'],
+                floatval($_POST['price']),
+                $_POST['description'],
+                $fornecedorId,
+                intval($_POST['stock'] ?? 0),
+                $imagemNome
+            ]);
+
+            if ($sucesso) {
+                $_SESSION['sucesso'] = "Produto cadastrado com sucesso! Aguarde aprovação.";
+                header('Location: /fornecedor/dashboard');
+                exit;
+            }
+        } catch (Exception $e) {
+            $erro = $e->getMessage();
+            if (!empty($imagemNome) && file_exists("./assets/uploads/" . $imagemNome)) {
+                unlink("./static/uploads/" . $imagemNome);
+            }
         }
     }
-}
-?>
+    ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">

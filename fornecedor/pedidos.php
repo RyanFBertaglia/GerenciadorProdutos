@@ -2,14 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once './includes/db.php';
-require_once './includes/auth.php';
+use Api\Includes\Database;
+$pdo = Database::getInstance();
 
-
-$fornecedor_id = $_SESSION['usuario']['id'];
+$fornecedor_id = $_SESSION['fornecedor']['id'];
 $erro = $sucesso = '';
 
-// Atualiza status para Entregue e credita saldo
+// Atualiza status para Entregue (SEM creditar saldo)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['entregar'])) {
     $pedidoId = (int)$_POST['pedido_id'];
 
@@ -25,32 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['entregar'])) {
             throw new Exception("Pedido não encontrado ou já entregue.");
         }
 
-        // Atualiza status para Entregue
         $stmtUpdate = $pdo->prepare("UPDATE Orders SET status = 'Entregue' WHERE id = ?");
         $stmtUpdate->execute([$pedidoId]);
 
-        // Credita valor na conta do fornecedor
-        $stmtConta = $pdo->prepare("SELECT * FROM BankAccount WHERE idUser = ? FOR UPDATE");
-        $stmtConta->execute([$fornecedor_id]);
-        $conta = $stmtConta->fetch(PDO::FETCH_ASSOC);
-
-        if (!$conta) {
-            throw new Exception("Conta bancária do fornecedor não encontrada.");
-        }
-
-        $novoSaldo = $conta['balance'] + $pedido['total'];
-        $stmtUpdateSaldo = $pdo->prepare("UPDATE BankAccount SET balance = ? WHERE idAccount = ?");
-        $stmtUpdateSaldo->execute([$novoSaldo, $conta['idAccount']]);
-
         $pdo->commit();
-        $sucesso = "Pedido marcado como entregue e valor creditado com sucesso.";
+        $sucesso = "Pedido marcado como entregue. Aguardando confirmação do cliente para liberação do pagamento.";
 
     } catch (Exception $e) {
         $pdo->rollBack();
         $erro = "Erro: " . $e->getMessage();
     }
 }
-
 // Busca pedidos do fornecedor
 $stmt = $pdo->prepare("SELECT * FROM Orders WHERE idFornecedor = ? ORDER BY dataPedido DESC");
 $stmt->execute([$fornecedor_id]);
@@ -111,7 +95,7 @@ $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php endforeach; ?>
             </ul>
 
-            <?php if ($pedido['status'] !== 'Entregue'): ?>
+            <?php if ($pedido['status'] !== 'Entregue' && $pedido['status'] !== 'Devolvido' && $pedido['status'] !== 'Confirmado'): ?>
                 <form method="post" style="margin-top:10px;">
                     <input type="hidden" name="pedido_id" value="<?= $pedido['id'] ?>">
                     <button type="submit" name="entregar">Marcar como Entregue</button>

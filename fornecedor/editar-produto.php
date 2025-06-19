@@ -4,7 +4,7 @@ require_once '../includes/auth.php';
 
 protectFornecedorPage();
 
-$fornecedorId = $_SESSION['usuario']['id'];
+$fornecedorId = $_SESSION['fornecedor']['id'];
 $produtoId = $_GET['id'] ?? 0;
 $erro = '';
 $sucesso = '';

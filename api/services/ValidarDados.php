@@ -117,4 +117,22 @@ class ValidarDados {
         
         return true;
     }
+
+    public static function verificaExistenciaFornecedor($cpf, $email, $pdo) {
+        $stmt = $pdo->prepare("SELECT * FROM fornecedores WHERE cpf = ? OR email = ?");
+        $stmt->execute([$cpf, $email]);
+        $usuario = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        if ($usuario) {
+            if ($usuario['cpf'] === $cpf) {
+                $_SESSION['erro'] = "CPF já cadastrado!";
+            } elseif ($usuario['email'] === $email) {
+                $_SESSION['erro'] = "Email já cadastrado!";
+            }
+            header("Location: /erro");
+            exit();
+        }
+        
+        return true;
+    }
 }

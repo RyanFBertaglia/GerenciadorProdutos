@@ -4,7 +4,7 @@ require_once './includes/auth.php';
 protectFornecedorPage();
 
 // Simulação de login do fornecedor
-$fornecedorId = $_SESSION['usuario']['id'];
+$fornecedorId = $_SESSION['fornecedor']['id'];
 
 // Processar ações do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,20 +1,26 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+use Api\Controller\AdminController;
+use Api\Model\ProdutosModel;
+use Api\Includes\Database;
+
+$pdo = Database::getInstance();
+$produtosModel = new ProdutosModel($pdo);
+$adminController = new AdminController($produtosModel);
+
 require_once './includes/db.php';
 require_once './includes/auth.php';
 
 protectAdminPage();
 
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM fornecedores");
-$totalFornecedores = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM produtos WHERE status = 'aprovado'");
-$totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM produtos WHERE status = 'pendente'");
-$produtosPendentes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+$produtosPendentes = $adminController->contarProdutosPendentes();
+$produtosAprovados = $produtosModel->contarProdutosAprovados();
+$totalFornecedores = $produtosModel->contarFornecedores();
 
 $_SESSION['produtosPendentes'] = $produtosPendentes;
-
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +52,11 @@ $_SESSION['produtosPendentes'] = $produtosPendentes;
         main {
             grid-area: content;
             overflow-y: auto;
-        }        
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -82,7 +92,7 @@ $_SESSION['produtosPendentes'] = $produtosPendentes;
                             <div class="card-body text-center">
                                 <i class="bi bi-box-seam card-icon"></i>
                                 <h5 class="card-title">Produtos Ativos</h5>
-                                <h2 class="card-text"><?= $totalProdutos ?></h2>
+                                <h2 class="card-text"><?= $produtosAprovados ?></h2>
                                 <a href="/produto" class="btn btn-light btn-sm">Ver todos</a>
                             </div>
                         </div>
@@ -108,15 +118,7 @@ $_SESSION['produtosPendentes'] = $produtosPendentes;
                             </div>
                             <div class="card-body">
                                 <?php
-                                $stmt = $pdo->query("
-                                    SELECT p.description, p.status, p.data_aprovacao, u.nome as admin_nome
-                                    FROM produtos p
-                                    LEFT JOIN usuarios u ON p.aprovado_por = u.id
-                                    WHERE p.status != 'pendente'
-                                    ORDER BY p.data_aprovacao DESC
-                                    LIMIT 5
-                                ");
-                                $atividades = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                $atividades = $adminController->listarAtividadesRecentes(); // Você precisará adicionar este método no controller
                                 ?>
                                 
                                 <?php if (empty($atividades)): ?>

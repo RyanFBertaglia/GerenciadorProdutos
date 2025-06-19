@@ -6,21 +6,21 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$produtosPendentes = $_SESSION['produtosPendentes'];
+use Api\Controller\AdminController;
+use Api\Model\ProdutosModel;
+use Api\Includes\Database;
+
+$database = Database::getInstance();
+$produtosModel = new ProdutosModel($database);
+$adminController = new AdminController($produtosModel);
 
 protectAdminPage();
 
-// Buscar produtos pendentes de aprovação
-$stmt = $pdo->prepare("
-    SELECT p.*, u.nome as fornecedor_nome 
-    FROM produtos p
-    JOIN fornecedores u ON p.supplier = u.id
-    WHERE p.status = 'pendente'
-    ORDER BY p.idProduct DESC
-");
-$stmt->execute();
-$produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$produtos = $adminController->listarPedidos();
+$produtosPendentes = count($produtos);
+$_SESSION['produtosPendentes'] = $produtosPendentes;
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">

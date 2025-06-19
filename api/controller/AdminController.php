@@ -1,25 +1,47 @@
 <?php
 
-namespace Api\Services;
+namespace Api\Controller;
+use Api\Model\ProdutosModel;
 
 class AdminController {
-    public function __construct() {
-        // Inicialização do controlador de administração
-    }
-    public function aprovarPedido($pedidoId) {
-        // Lógica para aprovar um pedido
-        // Exemplo: atualizar o status do pedido no banco de dados
-    }
 
-    public function rejeitarPedido($pedidoId) {
-        // Lógica para rejeitar um pedido
-        // Exemplo: atualizar o status do pedido no banco de dados
-    }
-
-    public function listarPedidos() {
-        // Lógica para listar todos os pedidos
-        // Exemplo: buscar pedidos no banco de dados e retornar como array
+    private $adminId = null;
+    
+    public function __construct(private ProdutosModel $produtosModel) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $adminId = $_SESSION['admin']['id'] ?? null;
+        $this->adminId = $adminId;
+        $this->produtosModel = $produtosModel;
     }
 
     
+    public function aprovarPedido($id) {
+        return $this->produtosModel->aprovarProduto($id, $adminId);
+    }
+
+    public function rejeitarPedido($idProduto, $motivo) {
+        return $this->produtosModel->rejeitarProduto($motivo, $adminId, $idProduto);
+    }
+
+    public function listarPedidos() {
+        return $this->produtosModel->listarProdutosPendentes();
+    }
+
+    public function contarProdutosPendentes() {
+        return $this->produtosModel->contarProdutosPendentes();
+    }
+
+    public function excluirProduto($id) {
+        return $this->produtosModel->excluirProduto($id);    
+    }
+
+    public function buscarProdutoPorId($id) {
+        return $this->produtosModel->buscarProdutoPorId($id);
+    }
+
+    public function listarAtividadesRecentes() {
+        return $this->produtosModel->listarAtividadesRecentes();
+    }
 }

@@ -1,6 +1,4 @@
 <?php
-require_once './includes/db.php';
-require_once './includes/auth.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -8,16 +6,12 @@ if (session_status() === PHP_SESSION_NONE) {
 
 use Api\Controller\AuthController;
 use Api\Model\ClienteModel;
-use Api\Services\ValidarDados;
+use Api\Includes\Database;
 
-$usuarioModel = new ClienteModel($pdo);
-$authController = new AuthController($usuarioModel);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    require __DIR__ . '/../vendor/autoload.php';
-    $pdo = require __DIR__ . '/../includes/db.php';
-
+    $pdo = Database::getInstance();
     $usuarioModel = new ClienteModel($pdo);
     $authController = new AuthController($usuarioModel);
 
@@ -47,9 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container-fluid">
         <form method="POST">
             <h2>Login</h2>
-            <?php if ($erro): ?>
-                <div class="erro"><?= htmlspecialchars($erro) ?></div>
-            <?php endif; ?>
             <input type="email" name="email" placeholder="E-mail" required>
             <input type="password" name="senha" placeholder="Senha" required>
             <div class="btn-container">

@@ -1,3 +1,36 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+
+use Api\Controller\AuthController;
+use Api\Model\FornecedorModel;
+use Api\Includes\Database;
+use Api\Services\ValidarDados;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $pdo = Database::getInstance();
+    ValidarDados::verificaExistenciaFornecedor($_POST['cpf'], $_POST['email'], $pdo);
+
+    $fornecedorModel = new FornecedorModel($pdo);
+    $authController = new AuthController($fornecedorModel);
+    $authController->cadastro([
+        'nome' => $_POST['nome'] ?? '',
+        'email' => $_POST['email'] ?? '',
+        'senha' => $_POST['senha'] ?? '',
+        'cpf' => $_POST['cpf'] ?? '',
+        'telefone' => $_POST['telefone'] ?? ''
+    ]);
+    
+    $_SESSION['erro'] = "";
+    header('Location: /login-fornecedor');
+    exit;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -19,7 +52,7 @@
     <?php include './static/elements/sidebar-main.php'; ?>
 
     <div class="container-fluid">
-        <form action="./register/saveSupplier.php" method="POST" onsubmit="return validarFormulario()">
+        <form action="/cadastro-fornecedor" method="POST" onsubmit="return validarFormulario()">
             <img src="../static/img/predio.png" alt="Prédio" class="building-img" style="display: block; margin: 0 auto 0px;">
             <h2 style="text-align: center;">Cadastro de Fornecedor</h2>
 

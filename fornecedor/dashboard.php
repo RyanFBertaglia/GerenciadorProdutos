@@ -1,10 +1,7 @@
 <?php
 require_once './includes/db.php';
-require_once './includes/auth.php';
 
-protectFornecedorPage();
-
-$fornecedorId = $_SESSION['usuario']['id'];
+$fornecedorId = $_SESSION['fornecedor']['id'];
 
 // Buscar produtos do fornecedor
 $stmt = $pdo->prepare("

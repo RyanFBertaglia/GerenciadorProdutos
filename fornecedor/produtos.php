@@ -4,7 +4,7 @@ require_once './includes/auth.php';
 
 protectFornecedorPage();
 
-$fornecedorId = $_SESSION['usuario']['id'];
+$fornecedorId = $_SESSION['fornecedor']['id'];
 $mensagem = '';
 
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {

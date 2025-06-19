@@ -6,12 +6,12 @@
 
     use Api\Controller\AuthController;
     use Api\Model\ClienteModel;
+    use Api\Includes\Database;
     use Api\Services\ValidarDados;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
-        require __DIR__ . '/../vendor/autoload.php';
-        $pdo = require __DIR__ . '/../includes/db.php';
+        $pdo = Database::getInstance();
 
         ValidarDados::verificaExistencia($_POST['cpf'], $_POST['email'], $pdo);
 
@@ -76,7 +76,7 @@
     <?php include './static/elements/sidebar-main.php'; ?>
 
     <div class="container-fluid">
-        <form action="./user/registerUser.php" method="POST" onsubmit="return validarFormulario()">
+        <form action="/cadastro-usuario" method="POST" onsubmit="return validarFormulario()">
             <img src="./static/img/predio.png" alt="Prédio" class="building-img" style="display: block; margin: 0 auto 0px;">
             <h2 style="text-align: center;">Cadastro Completo</h2>
 

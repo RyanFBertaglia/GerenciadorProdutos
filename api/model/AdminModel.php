@@ -3,13 +3,13 @@
 namespace Api\Model;
 use PDO;
 
-require_once __DIR__ . '/../config/db.php';
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 class AdminModel implements UserInterface {
-    private $pdo;
     
-    public function __construct($pdo) {
+    public function __construct(private PDO $pdo) {
         $this->pdo = $pdo;
     }
 
@@ -23,7 +23,9 @@ class AdminModel implements UserInterface {
             $_SESSION['admin'] = $usuario;
             return true;
         }
-        return false;
+        $_SESSION['erro'] = "Email ou senha inválidos.";
+        header("Location: /erro");
+        exit;
     }
 
     public function cadastro(array $userData) {

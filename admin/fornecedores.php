@@ -123,7 +123,6 @@ $sucesso = $_SESSION['sucesso'] ?? null;
 $erro = $_SESSION['erro'] ?? null;
 unset($_SESSION['sucesso'], $_SESSION['erro']);
 
-// Função para determinar a classe CSS da categoria de performance
 function getPerformanceCategoryClass($category) {
     switch($category) {
         case 'Alto Desempenho': return 'high-performance';
@@ -305,7 +304,6 @@ function getPerformanceCategoryClass($category) {
             }
         }
         
-        // Fechar modal ao clicar fora
         window.onclick = function(event) {
             const modal = document.getElementById('modalConfirmacao');
             if (event.target === modal) {
