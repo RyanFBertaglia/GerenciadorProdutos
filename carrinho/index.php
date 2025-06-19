@@ -2,39 +2,65 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once './includes/db.php';
 require_once './includes/auth.php';
 
-// Redirect to login if not authenticated
 if (!isLoggedIn()) {
-    header('Location: /login'); // Using router URL
+    header('Location: /login');
     exit;
 }
 
+use Api\Model\CarrinhoModel;
+use Api\Controller\ComprasController;
+use Api\Includes\Database;
+
+$database = Database::getInstance();
+$carrinhoModel = new CarrinhoModel($database);
+$carrinhoController = new ComprasController($carrinhoModel);
+
 $usuario_id = $_SESSION['usuario']['id'];
 
-try {
-    // Get cart items with product details
-    $stmt = $pdo->prepare("
-        SELECT c.id, c.quantidade, p.idProduct, p.description, p.price, p.image, p.stock 
-        FROM carrinho c
-        JOIN produtos p ON c.produto_id = p.idProduct
-        WHERE c.usuario_id = ?
-    ");
-    $stmt->execute([$usuario_id]);
-    $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['acao'])) {
+        switch ($_POST['acao']) {
 
-    // Calculate total
-    $total = array_reduce($itens, function($sum, $item) {
-        return $sum + ($item['price'] * $item['quantidade']);
-    }, 0);
-
-} catch (PDOException $e) {
-    error_log("Database error: " . $e->getMessage());
-    $_SESSION['erro'] = "Erro ao carregar carrinho";
-    $itens = [];
-    $total = 0;
+            case 'atualizar':
+                $id = $_POST['id'] ?? 0;
+                $quantidade = $_POST['quantidade'] ?? 1;
+                
+                if ($carrinhoController->atualizarQuantidade($id, $quantidade)) {
+                    $_SESSION['sucesso'] = "Quantidade atualizada com sucesso!";
+                } else {
+                    $_SESSION['erro'] = "Erro ao atualizar quantidade";
+                }
+                break;
+                
+            case 'remover':
+                $id = $_POST['id'] ?? 0;
+                
+                if ($carrinhoController->removerItem($id)) {
+                    $_SESSION['sucesso'] = "Item removido do carrinho!";
+                } else {
+                    $_SESSION['erro'] = "Erro ao remover item";
+                }
+                break;
+        }
+        
+        header('Location: /user/carrinho');
+        exit;
+    }
 }
+
+if (isset($_GET['acao']) && $_GET['acao'] === 'remover' && isset($_GET['id'])) {
+    if ($carrinhoController->removerItem($_GET['id'])) {
+        $_SESSION['sucesso'] = "Item removido do carrinho!";
+    } else {
+        $_SESSION['erro'] = "Erro ao remover item";
+    }
+    header('Location: /user/carrinho');
+    exit;
+}
+
+['itens' => $itens, 'total' => $total, 'quantidade' => $quantidade] = $carrinhoController->visualizarCarrinho();
 ?>
 
 <!DOCTYPE html>
@@ -208,12 +234,16 @@ try {
                     </td>
                     <td>R$ <?= number_format($item['price'], 2, ',', '.') ?></td>
                     <td>R$ <?= number_format($item['price'] * $item['quantidade'], 2, ',', '.') ?></td>
+
                     <td class="actions">
-                        <a href="/remover?id=<?= $item['id'] ?>" 
-                           class="btn btn-danger"
-                           onclick="return confirm('Remover este item do carrinho?')">
-                            <i class="fas fa-trash"></i> Remover
-                        </a>
+                        <form method="post" style="display: inline;">
+                            <input type="hidden" name="acao" value="remover">
+                            <input type="hidden" name="id" value="<?= $item['id'] ?>">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Remover este item do carrinho?')">
+                                <i class="fas fa-trash"></i> Remover
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -235,15 +265,5 @@ try {
     <button class="btn-start" onclick="window.location.href='/user/pedidos'">Acompanhar Pedidos</button>
 </main>
 
-<script>
-    // Simple confirmation for removal
-    document.querySelectorAll('.btn-danger').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if (!confirm('Tem certeza que deseja remover este item?')) {
-                e.preventDefault();
-            }
-        });
-    });
-</script>
 </body>
 </html>

@@ -1,43 +1,32 @@
 <?php
 require_once './includes/db.php';
 
-$fornecedorId = $_SESSION['fornecedor']['id'];
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once './includes/auth.php';
 
-// Buscar produtos do fornecedor
-$stmt = $pdo->prepare("
-    SELECT * FROM produtos 
-    WHERE supplier = ?
-    ORDER BY 
-        CASE status 
-            WHEN 'pendente' THEN 1
-            WHEN 'rejeitado' THEN 2
-            WHEN 'aprovado' THEN 3
-        END,
-        idProduct DESC
-");
-$stmt->execute([$fornecedorId]);
-$produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+use Api\Controller\FornecedorController;
+use Api\Model\FornecedorModel;
+use Api\Includes\Database;
 
-// Aprovados
-$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM produtos WHERE supplier = ? AND status = 'aprovado'");
-$stmt->execute([$fornecedorId]);
-$produtosAprovados = $stmt->fetch()['total'];
+$database = Database::getInstance();
+$fornecedorModel = new FornecedorModel($database);
+$fornecedorController = new FornecedorController($fornecedorModel);
 
-// Vendidos
-$stmt = $pdo->prepare("
-    SELECT 
-        SUM(vendidos) as total_vendidos,
-        SUM(vendidos * price) as total_vendas
-    FROM produtos 
-    WHERE supplier = ? AND status = 'aprovado'
-");
-$stmt->execute([$fornecedorId]);
-$resultado = $stmt->fetch();
+
+$produtos = $fornecedorController->listarProdutos();
+$produtosAprovados = $fornecedorController->contarProdutosAprovados();
+$resultado = $fornecedorController->obterVendas();
 
 $vendidos = $resultado['total_vendidos'] ?? 0;
 $vendas = $resultado['total_vendas'] ?? 0;
 
-
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
+    $produtoId = $_GET['id'];
+    $resultado = $fornecedorController->excluirProduto($produtoId);
+    header("Location: /fornecedor/dashboard");
+}
 ?>
 
 <!DOCTYPE html>
@@ -119,7 +108,7 @@ $vendas = $resultado['total_vendas'] ?? 0;
                     <a href="/fornecedor/editar-produto.php?id=<?= $produto['idProduct'] ?>" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <a href="/fornecedor/remover-produto.php?id=<?= $produto['idProduct'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza?')">
+                    <a href="?action=delete&id=<?= $produto['idProduct'] ?>" class="btn btn-sm btn-outline-danger" title="Remover" onclick="return confirm('Tem certeza?')">
                         <i class="bi bi-trash"></i>
                     </a>
                 </td>

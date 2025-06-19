@@ -12,7 +12,6 @@ $sucesso = $_SESSION['sucesso'] ?? null;
 $erro = $_SESSION['erro'] ?? null;
 unset($_SESSION['sucesso'], $_SESSION['erro']);
 
-// Processa aprovação/rejeição de devolução
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['aprovar_devolucao']) || isset($_POST['rejeitar_devolucao'])) {
         $pedido_id = (int)$_POST['pedido_id'];
@@ -22,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
         
-            // Verifica se o pedido pertence ao fornecedor e está com status pendente
+            // Pedido -> fornecedor status -> pendente
             $stmtVerifica = $pdo->prepare("SELECT o.*, u.id as id_cliente FROM Orders o 
                                          JOIN OrderItems oi ON o.id = oi.idOrder
                                          JOIN produtos p ON oi.idProduct = p.idProduct
@@ -35,10 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Pedido não encontrado, não pertence a você ou não está pendente de devolução.");
             }
         
-            // Define o novo status padronizado
             $novo_status = ($acao === 'aprovar') ? 'Devolvido' : 'Devolucao_Rejeitada';
             
-            // Atualiza status do pedido
             if ($acao === 'aprovar') {
                 $stmtAtualiza = $pdo->prepare("UPDATE Orders SET 
                                               status = ?, 
@@ -55,9 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtAtualiza->execute([$novo_status, $motivoRecusa, $pedido_id]);
             }
         
-            // Se aprovado, processa o reembolso
             if ($acao === 'aprovar') {
-                // Busca conta do fornecedor
                 $stmtContaFornecedor = $pdo->prepare("SELECT * FROM BankAccount 
                                                     WHERE idFornecedor = ? AND tipo = 'fornecedor' AND status = 'A'
                                                     LIMIT 1 FOR UPDATE");
@@ -65,10 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $contaFornecedor = $stmtContaFornecedor->fetch(PDO::FETCH_ASSOC);
         
                 if (!$contaFornecedor) {
-                    throw new Exception("Sua conta bancária não foi encontrada ou está inativa.");
+                    $_SESSION['erro'] = "Sua conta bancária não foi encontrada ou está inativa.";
+                    header('Location: /erro');
                 }
         
-                // Busca conta do cliente
                 $stmtContaCliente = $pdo->prepare("SELECT * FROM BankAccount 
                                                  WHERE idUser = ? AND tipo = 'usuario' AND status = 'A'
                                                  LIMIT 1 FOR UPDATE");
@@ -79,12 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Exception("Conta bancária do cliente não encontrada ou inativa.");
                 }
         
-                // Verifica saldo do fornecedor
                 if ($contaFornecedor['balance'] < $pedido['total']) {
                     throw new Exception("Saldo insuficiente em sua conta para realizar o reembolso.");
                 }
         
-                // Realiza a transferência (débito fornecedor, crédito cliente)
                 $stmtDebito = $pdo->prepare("UPDATE BankAccount 
                                             SET balance = balance - ? 
                                             WHERE idAccount = ?");

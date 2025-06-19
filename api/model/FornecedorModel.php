@@ -85,4 +85,55 @@ class FornecedorModel implements UserInterface {
         $stmt->execute([$email]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function listarProdutos($fornecedorId) {
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM produtos 
+            WHERE supplier = ?
+            ORDER BY 
+                CASE status 
+                    WHEN 'pendente' THEN 1
+                    WHEN 'rejeitado' THEN 2
+                    WHEN 'aprovado' THEN 3
+                END,
+                idProduct DESC
+        ");
+        $stmt->execute([$fornecedorId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function contarProdutosAprovados($fornecedorId) {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM produtos WHERE supplier = ? AND status = 'aprovado'");
+        $stmt->execute([$fornecedorId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function obterVendas($fornecedorId) {
+        $stmt = $this->pdo->prepare("
+            SELECT 
+                SUM(vendidos) as total_vendidos,
+                SUM(vendidos * price) as total_vendas
+            FROM produtos 
+            WHERE supplier = ? AND status = 'aprovado'
+        ");
+        $stmt->execute([$fornecedorId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function excluirProduto($produtoId, $fornecedorId) {
+        $stmt = $this->pdo->prepare("SELECT image FROM produtos WHERE idProduct = ? AND supplier = ?");
+        $stmt->execute([$produtoId, $fornecedorId]);
+        $produto = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($produto) {
+            if (!empty($produto['image']) && file_exists("../assets/uploads/" . $produto['image'])) {
+                unlink("../assets/uploads/" . $produto['image']);
+            }
+            
+            $stmt = $this->pdo->prepare("DELETE FROM produtos WHERE idProduct = ?");
+            return $stmt->execute([$produtoId]);
+        }
+        
+        return false;
+    }
 }

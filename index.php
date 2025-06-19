@@ -94,6 +94,7 @@ switch ($uri) {
     case '/remover':
         require './carrinho/remover.php';
         break;
+        
     case '/carrinho/atualizar':
         require './carrinho/atualizar.php';
         break;
