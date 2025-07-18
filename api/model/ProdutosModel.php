@@ -33,7 +33,7 @@ class ProdutosModel {
     }
 
     public function buscarProdutoPorId($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM produtos WHERE idProductd = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM produtos WHERE idProduct = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
@@ -57,7 +57,7 @@ class ProdutosModel {
     
     public function rejeitarProduto($motivo, $adminId, $idProduto) {
 
-        $stmt = $pdo->prepare("
+        $stmt = $this->pdo->prepare("
             UPDATE produtos 
             SET status = 'rejeitado', 
                 motivo_rejeicao = ?,

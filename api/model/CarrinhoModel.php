@@ -90,7 +90,7 @@ class CarrinhoModel {
         $stmt = $this->pdo->prepare("
             UPDATE carrinho 
             SET quantidade = ? 
-            WHERE id = ? AND usuario_id = ?
+            WHERE produto_id = ? AND usuario_id = ?
         ");
         return $stmt->execute([$quantidade, $id, $usuarioId]);
     }
@@ -99,5 +99,30 @@ class CarrinhoModel {
         $stmt = $this->pdo->prepare("INSERT INTO Payments (idUser, idOrder, status, datePayment, total) VALUES (?, ?, 'Pago', NOW(), ?)");
         return $stmt->execute([$usuario_id, $orderId, $total]);
     }
+
+    public function addProduct($id, $quantidade, $user) {
+        if ($this->userPossuiProduto($id, $user)) {
+            return $this->aumentarQuantidade($id, $quantidade, $user);
+        } else {
+            return $this->inserirProduto($id, $quantidade, $user);
+        }
+    }
+    
+    public function inserirProduto($id, $quantidade, $user) {
+        $stmt = $this->pdo->prepare("INSERT INTO carrinho (usuario_id, produto_id, quantidade) VALUES (?, ?, ?)");
+        return $stmt->execute([$user, $id, $quantidade]);
+    }
+    
+    public function aumentarQuantidade($id, $quantidade, $user) {
+        $stmt = $this->pdo->prepare("UPDATE carrinho SET quantidade = quantidade + ? WHERE usuario_id = ? AND produto_id = ?");
+        return $stmt->execute([$quantidade, $user, $id]);
+    }
+    
+    public function userPossuiProduto($id, $user) {
+        $stmt = $this->pdo->prepare("SELECT 1 FROM carrinho WHERE usuario_id = ? AND produto_id = ?");
+        $stmt->execute([$user, $id]);
+        return $stmt->fetchColumn() !== false;
+    }
+    
 }
 ?>

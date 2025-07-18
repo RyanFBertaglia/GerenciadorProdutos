@@ -3,16 +3,38 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+use Api\Controller\ComprasController;
+use Api\Model\CarrinhoModel;
+use Api\Includes\Database;
+use Api\Model\ProdutosModel;
+
+$pdo = Database::getInstance();
+$carrinhoModel = new CarrinhoModel($pdo);
+$produtos = new ProdutosModel($pdo);
+$comprasController = new ComprasController($carrinhoModel);
+
 require_once './includes/db.php';
+require_once './includes/auth.php';
+
 
 $id = $_GET['id'] ?? 0;
-$stmt = $pdo->prepare("SELECT * FROM produtos WHERE idProduct = ?");
-$stmt->execute([$id]);
-$produto = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'], $_POST['quantidade'])) {
+    protectPage();
+    $usuario_id = $_SESSION['usuario']['id'];
+    $produto_id = (int) $_POST['produto_id'];
+    $quantidade = (int) $_POST['quantidade'];
+
+    $comprasController->adicionar($produto_id, $quantidade, $usuario_id);
+
+}
+
+$produto = $produtos->buscarProdutoPorId($id);
 
 if (!$produto) {
     die("Produto não encontrado");
 }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -152,7 +174,7 @@ if (!$produto) {
 <p>Estoque disponível: <?= $produto['stock'] ?> unidades</p>
 
 <?php if ($produto['stock'] > 0): ?>
-<form action="/adicionar" method="post">
+<form method="post">
     <input type="hidden" name="produto_id" value="<?= $produto['idProduct'] ?>">
     <input type="number" name="quantidade" value="1" min="1" max="<?= $produto['stock'] ?>">
     <button type="submit">Adicionar ao Carrinho</button>
@@ -160,9 +182,6 @@ if (!$produto) {
 <?php else: ?>
 <p>Produto esgotado</p>
 <?php endif; ?>
-    </main>
-
-
 </main>
 </body>
 </html>

@@ -224,7 +224,8 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'remover' && isset($_GET['id'])) {
                     </td>
                     <td>
                         <form action="/user/carrinho" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="<?= $item['id'] ?>">
+                        <input type="hidden" name="acao" value="atualizar">    
+                        <input type="hidden" name="id" value="<?= $item['id'] ?>">
                             <input type="number" name="quantidade" 
                                    value="<?= $item['quantidade'] ?>" 
                                    min="1" max="<?= $item['stock'] ?>" 

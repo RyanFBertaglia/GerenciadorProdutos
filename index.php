@@ -86,20 +86,6 @@ switch ($uri) {
         require './finalizar/checkout.php';
         break;
 
-    case '/adicionar':
-        protectPage();
-        require './carrinho/adicionar.php';
-        break;
-
-    case '/remover':
-        require './carrinho/remover.php';
-        break;
-        
-    case '/carrinho/atualizar':
-        require './carrinho/atualizar.php';
-        break;
-
-
     // ROTAS DE AUTENTICAÇÃO
 
     case '/login':
@@ -163,16 +149,6 @@ switch ($uri) {
     case '/admin/usuarios':
         protectAdminPage();
         require './admin/usuarios.php';
-        break;
-
-    case '/admin/aprovar-produto':
-        protectAdminPage();
-        require './admin/aprovar-produto.php';
-        break;
-    
-    case '/admin/rejeitar-produto':
-        protectAdminPage();
-        require './admin/rejeitar-produto.php';
         break;
 
     case '/admin/fornecedores':

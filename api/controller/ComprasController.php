@@ -2,6 +2,8 @@
 
 namespace Api\Controller;
 use Api\Model\CarrinhoModel;
+use Error;
+use Exception;
 
 class ComprasController {
 
@@ -56,11 +58,24 @@ class ComprasController {
     }
 
     public function atualizarQuantidade($id, $quantidade) {
-        return $this->carrinhoModel->atualizarQuantidade($quantidade, $id, $this->usuarioId);
+        return $this->carrinhoModel->atualizarQuantidade($id, $quantidade, $this->usuarioId);
     }
 
     public function removerItem($id) {
         return $this->carrinhoModel->removerItem($id, $this->usuarioId);
+    }
+
+    public function adicionar($id, $quantidade, $user) {
+        try {
+            if ($this->carrinhoModel->addProduct($id, $quantidade, $user)) {
+                return true;
+            }
+        } catch(Error $e) {
+            $_SESSION['erro'] = "Erro ao adicionar produto: " . $e->getMessage();
+            header("Location: /erro");
+            exit;
+        }
+        return false;
     }
 }
 
