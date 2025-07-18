@@ -8,14 +8,12 @@ $pdo = Database::getInstance();
 $fornecedor_id = $_SESSION['fornecedor']['id'];
 $erro = $sucesso = '';
 
-// Atualiza status para Entregue (SEM creditar saldo)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['entregar'])) {
     $pedidoId = (int)$_POST['pedido_id'];
 
     try {
         $pdo->beginTransaction();
 
-        // Verifica se o pedido pertence ao fornecedor e não está entregue ainda
         $stmtVerifica = $pdo->prepare("SELECT * FROM Orders WHERE id = ? AND idFornecedor = ? AND status <> 'Entregue' FOR UPDATE");
         $stmtVerifica->execute([$pedidoId, $fornecedor_id]);
         $pedido = $stmtVerifica->fetch(PDO::FETCH_ASSOC);

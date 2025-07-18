@@ -2,6 +2,7 @@
 
 namespace Api\Model;
 use PDO;
+use PDOException;
 
 class CarrinhoModel {
 
@@ -83,6 +84,15 @@ class CarrinhoModel {
         $stmt = $this->pdo->prepare("SELECT stock FROM produtos WHERE idProduct = ?");
         $stmt->execute([$idProduct]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function atualizarQuantidade($id, $quantidade, $usuarioId) {
+        $stmt = $this->pdo->prepare("
+            UPDATE carrinho 
+            SET quantidade = ? 
+            WHERE id = ? AND usuario_id = ?
+        ");
+        return $stmt->execute([$quantidade, $id, $usuarioId]);
     }
 
     public function criarPagamento($usuario_id, $orderId, $total) {
