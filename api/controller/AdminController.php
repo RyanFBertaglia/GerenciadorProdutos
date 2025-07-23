@@ -18,11 +18,11 @@ class AdminController {
 
     
     public function aprovarPedido($id) {
-        return $this->produtosModel->aprovarProduto($id, $adminId);
+        return $this->produtosModel->aprovarProduto($id, $this->adminId);
     }
 
     public function rejeitarPedido($idProduto, $motivo) {
-        return $this->produtosModel->rejeitarProduto($motivo, $adminId, $idProduto);
+        return $this->produtosModel->rejeitarProduto($motivo, $this->adminId, $idProduto);
     }
 
     public function listarPedidos() {

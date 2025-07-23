@@ -118,7 +118,7 @@ $_SESSION['produtosPendentes'] = $produtosPendentes;
                             </div>
                             <div class="card-body">
                                 <?php
-                                $atividades = $adminController->listarAtividadesRecentes(); // Você precisará adicionar este método no controller
+                                $atividades = $adminController->listarAtividadesRecentes();
                                 ?>
                                 
                                 <?php if (empty($atividades)): ?>

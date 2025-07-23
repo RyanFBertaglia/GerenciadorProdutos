@@ -30,23 +30,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="./static/style/login.css">
     <link rel="stylesheet" href="./static/style/main.css">
-    <link rel="stylesheet" href="./static/style/login.css">    
+    <link rel="stylesheet" href="./static/style/login.css">
 </head>
 <body>
 
 <?php include './static/elements/sidebar-main.php'; ?>
 
-<div class="container-fluid">
+    <div class="container-fluid">
         <form method="POST">
             <h2>Login</h2>
+            <?php if ($erro): ?>
+            <div class="erro"><?= htmlspecialchars($erro) ?></div>
+            <?php endif; ?>
             <input type="email" name="email" placeholder="E-mail" required>
             <input type="password" name="senha" placeholder="Senha" required>
             <div class="btn-container">
-        <button type="submit" class="btn">Entrar</button>
-        <a href="/cadastro-usuario" class="btn">Ainda não tem uma conta? Cadastrar-se</a>
-        </div>
+                <button type="submit" class="btn">Entrar</button>
+                <a href="/cadastro-usuario" class="btn">Ainda não tem uma conta? Cadastrar-se</a>
+            </div>
         </form>
     </div> 
 

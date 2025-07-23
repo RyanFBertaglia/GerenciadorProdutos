@@ -19,6 +19,19 @@ protectAdminPage();
 $produtos = $adminController->listarPedidos();
 $produtosPendentes = count($produtos);
 $_SESSION['produtosPendentes'] = $produtosPendentes;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_POST['acao'] == 'aprovar') {
+        $id = (int)$_POST['id'];
+        $adminController->aprovarPedido($id);
+    }
+    if ($_POST['acao'] == 'rejeitar') {
+        $id = (int)$_POST['id'];
+        $motivo = $_POST['motivo'];
+        $adminController->rejeitarPedido($id, $motivo);
+    }
+    header("admin/dashboard");
+}
 ?>
 
 
@@ -203,8 +216,9 @@ p {
                     <?php endif; ?>
                     
                     <div class="acoes-admin">
-                        <form action="/admin/aprovar-produto" method="post" style="display: inline;">
+                        <form method="post" style="display: inline;">
                             <input type="hidden" name="id" value="<?= $produto['idProduct'] ?>">
+                            <input type="hidden" name="acao" value="<?= 'aprovar' ?>">
                             <button type="submit" class="btn btn-success">Aprovar</button>
                         </form>
                         
@@ -213,8 +227,9 @@ p {
                         </button>
                         
                         <div id="rejeitar-<?= $produto['idProduct'] ?>" style="display: none; margin-top: 10px;">
-                            <form action="/admin/rejeitar-produto" method="post">
+                            <form method="post">
                                 <input type="hidden" name="id" value="<?= $produto['idProduct'] ?>">
+                                <input type="hidden" name="acao" value="<?='rejeitar' ?>">
                                 <div class="form-group">
                                     <label>Motivo da Rejeição:</label>
                                     <textarea name="motivo" class="form-control" required></textarea>

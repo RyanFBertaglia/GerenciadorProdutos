@@ -1,3 +1,15 @@
+/*
+Usado em:
+    checkout
+    add-product
+    meus-pedidos
+    dashboard
+    detalhes
+    devolucoes
+    pedidos
+    fornecedor/produtos
+*/
+
 body {
     grid-template-columns: 200px 1fr;
 }
