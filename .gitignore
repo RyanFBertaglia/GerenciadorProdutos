@@ -1,1 +1,5 @@
 static/uploads/*
+vendor/**
+dashboard/**
+dashboard
+vendor
