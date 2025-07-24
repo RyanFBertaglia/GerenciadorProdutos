@@ -11,17 +11,22 @@ Este projeto é um sistema de e-commerce simplificado, que permite que usuários
 - Adicionar produtos ao carrinho
 - Realizar checkout com validação de saldo
 - Criar pedidos e efetuar pagamentos
+![User pages](static/img/pages/gifs/user.gif)
 
 ### Fornecedor
 - Realizar cadastro e login
 - Cadastrar novos produtos
 - Acompanhar o status de aprovação dos produtos
+![Fornecedor pages](static/img/pages/gifs/supplier.gif)
+
 
 ### Administrador
 - Realizar login como administrador
 - Visualizar produtos pendentes de aprovação
 - Aprovar ou recusar produtos cadastrados pelos fornecedores
 - Alterar o saldo dos usuários
+![Admin pages](static/img/pages/gifs/admin.gif)
+
 
 ## Tecnologias e Padrões Utilizados
 

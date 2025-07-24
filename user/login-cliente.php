@@ -40,9 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container-fluid">
         <form method="POST">
             <h2>Login</h2>
-            <?php if ($erro): ?>
-            <div class="erro"><?= htmlspecialchars($erro) ?></div>
-            <?php endif; ?>
+
             <input type="email" name="email" placeholder="E-mail" required>
             <input type="password" name="senha" placeholder="Senha" required>
             <div class="btn-container">
