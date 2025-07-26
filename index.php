@@ -127,7 +127,11 @@ switch ($uri) {
             redirect('fornecedor/dashboard');
         }
         require './user/cadastrar-fornecedor.php';
-        break;    
+        break;
+    
+    case '/user/minha-conta':
+        require './user/minha-conta.php';
+        break;
     
     // ROTAS ADMIN
 

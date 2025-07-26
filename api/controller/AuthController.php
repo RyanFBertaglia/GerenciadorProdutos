@@ -22,8 +22,11 @@ class AuthController {
         return $this->userModel->getUserById($id);
     }
 
-    public function updateUser($id, array $userData) {
-        return $this->userModel->updateUser($id, $userData);
+    public function updateUser(array $userData) {
+        if (!empty($_POST['senha'])) {
+            $updateData['senha'] = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+        }
+        return $this->userModel->updateUser($userData['id'], $userData);
     }
 
     public function deleteUser($id) {

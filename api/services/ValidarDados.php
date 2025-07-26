@@ -100,6 +100,20 @@ class ValidarDados {
         return true;
     }
 
+    public static function verificaExistenciaEmail($email, $id, $pdo) {
+     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ? AND id != ? LIMIT 1");
+        $stmt->execute([$email, $id]);
+        $usuario = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        if ($usuario) {
+            $_SESSION['erro'] = "Email já cadastrado!";
+            header("Location: /erro");
+            exit();
+        }
+        
+        return true;
+    }
+
     public static function verificaExistencia($cpf, $email, $pdo) {
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE cpf = ? OR email = ?");
         $stmt->execute([$cpf, $email]);
