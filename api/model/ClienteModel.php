@@ -64,11 +64,9 @@ class ClienteModel implements UserInterface {
     }
 
     public function updateUser($id, array $userData) {
-        // Separate the user ID from the data to be updated
         $userId = $id;
         $updateData = $userData;
 
-        // Remove the ID from the update data if it exists
         unset($updateData['id']);
 
         $fields = [];
@@ -79,7 +77,6 @@ class ClienteModel implements UserInterface {
             $values[] = $value;
         }
         
-        // Add the user ID to the end of the values array
         $values[] = $userId;
 
         $sql = "UPDATE usuarios SET " . implode(", ", $fields) . " WHERE id = ?";

@@ -130,6 +130,7 @@ switch ($uri) {
         break;
     
     case '/user/minha-conta':
+        protectPage();
         require './user/minha-conta.php';
         break;
     

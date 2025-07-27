@@ -60,5 +60,15 @@ class AdminModel implements UserInterface {
         $stmt = $this->pdo->prepare("DELETE FROM admin WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    public function getAllUsers() {
+        $stmt = $this->pdo->query("SELECT * FROM usuarios");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateUserSaldo($id, $valor) {
+        $stmt = $this->pdo->prepare("UPDATE usuarios SET saldo = saldo + ? WHERE id = ?");
+        return $stmt->execute([$valor, $id]);
+    }
 }
     
