@@ -152,9 +152,12 @@ switch ($uri) {
         break;  
 
     case '/admin/usuarios':
-        protectAdminPage();
-        require './admin/usuarios.php';
-        break;
+    protectAdminPage();
+    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+    $_GET['page'] = $page;
+
+    require './admin/users.php';
+    break;
 
     case '/admin/fornecedores':
         protectAdminPage();

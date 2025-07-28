@@ -38,7 +38,7 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
         <span>Produtos</span>
     </div>
     
-    <div class="nav-item" onclick="window.location.href='/admin/usuarios.php'">
+    <div class="nav-item" onclick="window.location.href='/admin/usuarios'">
         <i class="bi bi-person-lines-fill"></i>
         <span>Usuários</span>
     </div>
