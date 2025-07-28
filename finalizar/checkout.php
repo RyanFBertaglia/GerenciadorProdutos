@@ -158,6 +158,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
     <meta charset="UTF-8" />
     <title>Checkout</title>
     <link rel="stylesheet" href="../static/style/admin/main.css">
+    <link rel="stylesheet" href="../static/style/table.css">
+
     <style>
     body {
         margin: 0;
@@ -202,41 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
         border-radius: 4px;
         border-left: 4px solid #4caf50;
         margin: 15px 0;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 25px 0;
-        font-size: 0.9em;
-        font-family: Arial;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    table thead tr {
-        background-color: #4a90e2;
-        color: #ffffff;
-        text-align: left;
-        font-weight: bold;
-    }
-
-    table th,
-    table td {
-        padding: 12px 15px;
-    }
-
-    table tbody tr {
-        border: none;
-    }
-
-    table tbody tr:nth-of-type(even) {
-        background-color: #f9f9f9;
-    }
-
-    table tbody tr:hover {
-        background-color: #f1f1f1;
     }
 
     .fornecedor-info {

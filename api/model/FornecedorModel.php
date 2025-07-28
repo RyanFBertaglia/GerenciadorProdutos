@@ -7,17 +7,15 @@ use Api\Services\ValidarDados;
 use PDO;
 use Exception;
 
-class FornecedorModel implements UserInterface
-{
+class FornecedorModel implements UserInterface {
+
     private $pdo;
 
-    public function __construct($pdo)
-    {
+    public function __construct($pdo) {
         $this->pdo = $pdo;
     }
 
-    public function login($email, $senha)
-    {
+    public function login($email, $senha) {
         ValidarDados::validarEmail($email);
         ValidarDados::validarSenha($senha);
 
@@ -35,8 +33,8 @@ class FornecedorModel implements UserInterface
         exit;
     }
 
-    public function cadastro(array $userData)
-    {
+    public function cadastro(array $userData) {
+
         ValidarDados::validarNome($userData['nome']);
         ValidarDados::validarEmail($userData['email']);
         ValidarDados::validarSenha($userData['senha']);
@@ -51,18 +49,26 @@ class FornecedorModel implements UserInterface
             throw new \Exception("Erro ao cadastrar fornecedor: " . implode(", ", $stmt->errorInfo()));
         }
 
+        $this->createFornecedorBankAccount($this->pdo->lastInsertId(), [
+            'tipo' => 'fornecedor',
+            'status' => 'A'
+        ]);
+
         return true;
     }
 
-    public function getUserById($id)
-    {
+    public function getUserById($id) {
         $stmt = $this->pdo->prepare("SELECT * FROM fornecedores WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateUser($id, array $userData)
-    {
+    public function createFornecedorBankAccount($fornecedorId, $bankAccountData) {
+        $stmt = $this->pdo->prepare("INSERT INTO BankAccount (idFornecedor, tipo, status) VALUES (?, ?, ?)");
+        return $stmt->execute([$fornecedorId, 'fornecedor', 'A']);
+    }
+
+    public function updateUser($id, array $userData) {
         $fields = [];
         $values = [];
 
