@@ -163,7 +163,6 @@ switch ($uri) {
         protectAdminPage();
         require './admin/fornecedores.php';
         break;
-
         
     // Página 404
     default:
