@@ -33,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Login Fornecedor</title>
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
     <style>
 
     </style>

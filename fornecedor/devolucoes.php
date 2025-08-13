@@ -69,6 +69,8 @@ $historico_devolucoes = $fornecedorModel->getHistoricoDevolucoes($fornecedor_id)
     </style>
     <link rel="stylesheet" href="../static/style/admin/main.css">
     <link rel="stylesheet" href="../static/style/fornecedorDevolucao.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
 </head>
 
 <body>

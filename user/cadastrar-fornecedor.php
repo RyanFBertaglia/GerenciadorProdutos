@@ -41,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <link rel="stylesheet" href="./static/style/main.css">
     <link rel="stylesheet" href="./static/style/register.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
     <style>
         body{
             min-height: 105vh;

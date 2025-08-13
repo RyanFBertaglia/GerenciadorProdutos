@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./static/style/main.css">
     <link rel="stylesheet" href="./static/style/login.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
     <style>
         .login-container {
             max-width: 400px;

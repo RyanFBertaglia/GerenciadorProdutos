@@ -17,6 +17,8 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="./static/style/tipografia.css">
   <link rel="stylesheet" href="./static/style/main.css">
   <link rel="stylesheet" href="./static/style/loja.css">
+  <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
   <style>
         body {
             font-family: arial; 

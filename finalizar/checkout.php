@@ -159,6 +159,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comprar'])) {
     <title>Checkout</title>
     <link rel="stylesheet" href="../static/style/admin/main.css">
     <link rel="stylesheet" href="../static/style/table.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
 
     <style>
     body {

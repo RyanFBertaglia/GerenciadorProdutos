@@ -32,6 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login</title>
     <link rel="stylesheet" href="./static/style/main.css">
     <link rel="stylesheet" href="./static/style/login.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
 </head>
 <body>
 

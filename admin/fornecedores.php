@@ -163,6 +163,8 @@ function getPerformanceCategoryClass($category) {
         }
         
     </style>
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
 </head>
 <body>
     <?php include './static/elements/sidebar-admin.php'; ?>

@@ -73,6 +73,8 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'remover' && isset($_GET['id'])) {
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../static/style/main.css">
+  <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
   <link rel="stylesheet" href="./static/style/tipografia.css">
   <style>
     body {

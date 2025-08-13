@@ -41,6 +41,8 @@ if (!$produto) {
 <head>
     <title>Detalhes Produto</title>
     <link rel="stylesheet" href="../static/style/admin/main.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
     <style>
     body {
         margin: 0;

@@ -150,6 +150,8 @@ foreach ($pedidos as &$pedido) {
 <head>
     <meta charset="UTF-8">
     <title>Meus Pedidos</title>
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
     <style>
         body { 
             font-family: Arial, sans-serif; 

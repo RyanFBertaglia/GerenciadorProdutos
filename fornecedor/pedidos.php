@@ -47,6 +47,8 @@ $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Pedidos do Fornecedor</title>
     <link rel="stylesheet" href="../static/style/admin/main.css">
     <link rel="stylesheet" href="../static/style/pedidos.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
     <style>
         body {
         margin: 0;

@@ -42,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Produtos Pendentes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../static/style/admin/main.css">
+    <link rel="icon" href="./static/img/logo-azul.png" type="image/x-icon">
+
     <style>
         body {
             border: 0;
