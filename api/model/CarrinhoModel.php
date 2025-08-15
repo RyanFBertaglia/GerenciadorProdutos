@@ -86,13 +86,13 @@ class CarrinhoModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function atualizarQuantidade($id, $quantidade, $usuarioId) {
+    public function atualizarQuantidade($id, $quantidade) {
         $stmt = $this->pdo->prepare("
             UPDATE carrinho 
             SET quantidade = ? 
-            WHERE produto_id = ? AND usuario_id = ?
+            WHERE id = ?
         ");
-        return $stmt->execute([$quantidade, $id, $usuarioId]);
+        return $stmt->execute([$quantidade, $id]);
     }
 
     public function criarPagamento($usuario_id, $orderId, $total) {

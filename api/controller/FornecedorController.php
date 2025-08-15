@@ -38,8 +38,8 @@ class FornecedorController {
         return $this->fornecedorModel->getAllPendentes($this->fornecedorId);
     }
 
-    public function reembolso($idCliente, $valor) {
-        return $this->fornecedorModel->reembolsar($idCliente, $this->fornecedorId, $valor);
+    public function reembolso($idCliente, $valor, $idForncedor = null) {
+        return $this->fornecedorModel->reembolsar($idCliente, $idForncedor, $valor);
     }
 
     public function atualizaStatus($acao, $pedidoId, $motivo = null) {
@@ -51,12 +51,15 @@ class FornecedorController {
     }
 
     public function devolucao($produtoId, $acao, $motivo = null) {
-        $produto = $this->getPendenteById($produtoId);
+        $pedido = $this->getPendenteById($produtoId);
+        
         if($acao === 'aprovar') {
-            $this->reembolso($produto['id_cliente'], $produto['total']);
-            return $this->atualizaStatus($acao, $produtoId, $motivo);
+            $this->reembolso($pedido['idUser'], $pedido['total'], $pedido['idFornecedor']);
+            $this->atualizaStatus($acao, $pedido['id'], $motivo);
         } else {
-            return $this->atualizaStatus($acao, $produtoId, $motivo);
+            $this->atualizaStatus($acao, $pedido['id'], $motivo);
         }
+        
+        return $pedido;
     }
 }

@@ -58,7 +58,7 @@ class ComprasController {
     }
 
     public function atualizarQuantidade($id, $quantidade) {
-        return $this->carrinhoModel->atualizarQuantidade($id, $quantidade, $this->usuarioId);
+        return $this->carrinhoModel->atualizarQuantidade($id, $quantidade);
     }
 
     public function removerItem($id) {

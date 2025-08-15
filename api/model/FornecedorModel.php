@@ -230,9 +230,6 @@ class FornecedorModel implements UserInterface {
             throw new Exception("Conta bancária do cliente não encontrada ou inativa.");
         }
 
-        if ($contaFornecedor['balance'] < $valor) {
-            throw new Exception("Saldo insuficiente em sua conta para realizar o reembolso.");
-        }
 
         $stmtDebito = $this->pdo->prepare("UPDATE BankAccount 
                                             SET balance = balance - ? 
@@ -245,26 +242,39 @@ class FornecedorModel implements UserInterface {
         return $stmtCredito->execute([$valor, $contaCliente['idAccount']]);
     }
 
-    public function atualizarStatusPedido($pedidoId, $novoStatus, $motivoRecusa = null)
+    public function atualizarStatusPedido($pedidoId, $acao, $motivoRecusa = null)
     {
-        if ($novoStatus === 'Devolvido') {
+        if ($acao === 'Devolvido') {
             $sql = "UPDATE Orders SET 
-                    status = ?, 
-                    dataAprovacaoDevolucao = NOW(),
-                    motivoRecusa = NULL
-                    WHERE id = ?";
-            $params = [$novoStatus, $pedidoId];
-        } else {
+                    status = 'Devolvido', 
+                    dataAprovacaoDevolucao = NOW() 
+                    WHERE id = ? AND status = 'Devolucao_Pendente'";
+            $params = [$pedidoId];
+            
+        } elseif ($acao === 'Devolucao_Rejeitada') {
+            if (empty(trim($motivoRecusa))) {
+                throw new Exception("Motivo de rejeição é obrigatório.");
+            }
+            
             $sql = "UPDATE Orders SET 
-                    status = ?, 
+                    status = 'Devolucao_Rejeitada', 
                     dataRejeicaoDevolucao = NOW(),
                     motivoRecusa = ?
-                    WHERE id = ?";
-            $params = [$novoStatus, $motivoRecusa, $pedidoId];
+                    WHERE id = ? AND status = 'Devolucao_Pendente'";
+            $params = [$motivoRecusa, $pedidoId];
+            
+        } else {
+            throw new Exception("Ação inválida. Use 'aprovar' ou 'rejeitar'.");
         }
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($params);
+        $resultado = $stmt->execute($params);
+        
+        if ($stmt->rowCount() === 0) {
+            throw new Exception("Nenhum pedido foi atualizado. Verifique se o pedido existe e está com status 'Devolucao_Pendente'.");
+        }
+        
+        return $resultado;
     }
 
     public function getItensPedido($idPedido, $idFornecedor) {
@@ -276,5 +286,16 @@ class FornecedorModel implements UserInterface {
         ");
         $stmt->execute([$idPedido, $idFornecedor]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getPedidoById($idPedido, $idFornecedor) {
+        $stmt = $this->pdo->prepare("
+            SELECT o.*, u.nome 
+            FROM Orders o 
+            JOIN usuarios u ON o.idUser = u.id
+            WHERE o.id = ? AND o.   idFornecedor = ?
+        ");
+        $stmt->execute([$idPedido, $idFornecedor]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
